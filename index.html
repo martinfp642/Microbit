@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>micro:bit Visualizador</title>
+    <title>micro:bit Visualizador Avanzado</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -19,7 +19,7 @@
         }
         
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         
@@ -32,6 +32,11 @@
         h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
         }
         
         .subtitle {
@@ -75,6 +80,15 @@
             background: #f0f0f0;
         }
         
+        .btn-success {
+            background: #2196F3;
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #1976D2;
+        }
+        
         button:disabled {
             opacity: 0.4;
             cursor: not-allowed;
@@ -101,7 +115,7 @@
         
         .chart-container {
             position: relative;
-            height: 400px;
+            height: 450px;
             margin-top: 20px;
         }
         
@@ -130,10 +144,9 @@
             border-bottom: 1px solid #ddd;
         }
         
-        input[type="number"] {
-            width: 100%;
-            padding: 5px;
-            border: 1px solid black;
+        input[type="number"], input[type="text"], select {
+            padding: 8px;
+            border: 2px solid black;
             font-size: 0.9rem;
         }
         
@@ -180,17 +193,18 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            margin-bottom: 15px;
         }
         
         .input-group label {
             font-weight: 600;
             white-space: nowrap;
+            min-width: 120px;
         }
         
-        .input-group input {
-            width: 100px;
-            padding: 8px;
-            border: 2px solid black;
+        .input-group input, .input-group select {
+            flex: 1;
+            max-width: 200px;
         }
         
         .status {
@@ -199,15 +213,41 @@
             border: 1px solid #ccc;
             border-radius: 4px;
         }
+        
+        .fit-results {
+            background: #f9f9f9;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #ddd;
+        }
+        
+        .fit-results h4 {
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+        
+        .fit-results p {
+            margin: 5px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid black;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>micro:bit Data Visualizer</h1>
-            <p class="subtitle">Captura, edita y visualiza datos en tiempo real</p>
+            <h1>micro:bit Data Visualizer Pro</h1>
+            <p class="subtitle">Captura, edita, ajusta y analiza datos en tiempo real</p>
         </div>
 
+        <!-- CONEXIÓN -->
         <div class="controls">
             <button id="connectBtn" class="btn-primary">Conectar micro:bit</button>
             <button id="pauseBtn" class="btn-primary" style="display:none;">Pausar</button>
@@ -215,7 +255,9 @@
             <span id="status" class="stats">Estado: Desconectado</span>
         </div>
 
+        <!-- CONTROLES BÁSICOS -->
         <div class="panel">
+            <div class="section-title">Controles Básicos</div>
             <div class="input-group">
                 <label for="intervalInput">Intervalo de muestreo (ms):</label>
                 <input type="number" id="intervalInput" value="100" min="1">
@@ -234,7 +276,58 @@
             </div>
         </div>
 
+        <!-- CONFIGURACIÓN DE EJES -->
+        <div class="panel">
+            <div class="section-title">Configuración de Ejes</div>
+            <div class="input-group">
+                <label for="xAxisLabel">Etiqueta eje X:</label>
+                <input type="text" id="xAxisLabel" value="Tiempo (s)" placeholder="Eje X">
+            </div>
+            <div class="input-group">
+                <label for="yAxisLabel">Etiqueta eje Y:</label>
+                <input type="text" id="yAxisLabel" value="Valor" placeholder="Eje Y">
+            </div>
+            <div class="input-group">
+                <label for="timeZeroBtn">Establecer tiempo cero:</label>
+                <button id="timeZeroBtn" class="btn-secondary" disabled>
+                    Usar punto seleccionado como t=0
+                </button>
+                <button id="resetTimeBtn" class="btn-secondary">
+                    Restablecer tiempo original
+                </button>
+            </div>
+            <div class="input-group">
+                <label for="timeUnitInput">Unidad de tiempo (ms):</label>
+                <input type="number" id="timeUnitInput" value="1000" min="1" placeholder="1000 = segundos">
+                <span style="color: #666;">1000 = segundos, 1 = milisegundos</span>
+            </div>
+        </div>
+
+        <!-- AJUSTES DE CURVAS -->
+        <div class="panel">
+            <div class="section-title">Ajustes de Curvas (Mínimos Cuadrados)</div>
+            <div class="input-group">
+                <label for="fitType">Tipo de ajuste:</label>
+                <select id="fitType">
+                    <option value="none">Ninguno</option>
+                    <option value="linear">Lineal (y = mx + b)</option>
+                    <option value="quadratic">Cuadrático (y = ax² + bx + c)</option>
+                    <option value="exponential">Exponencial (y = a·e^(bx))</option>
+                    <option value="power">Potencial (y = a·x^b)</option>
+                    <option value="logarithmic">Logarítmico (y = a·ln(x) + b)</option>
+                </select>
+                <button id="calculateFitBtn" class="btn-success">Calcular Ajuste</button>
+                <button id="clearFitBtn" class="btn-secondary">Limpiar Ajuste</button>
+            </div>
+            <div id="fitResults" class="fit-results" style="display:none;">
+                <h4>Resultados del Ajuste</h4>
+                <div id="fitEquation"></div>
+                <div id="fitStats"></div>
+            </div>
+        </div>
+
         <div class="grid">
+            <!-- GRÁFICA -->
             <div class="panel">
                 <h2>Gráfica</h2>
                 <div class="chart-container">
@@ -245,6 +338,7 @@
                 </p>
             </div>
 
+            <!-- TABLA DE DATOS -->
             <div class="panel">
                 <h2>Datos</h2>
                 <div class="table-container">
@@ -252,13 +346,14 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Tiempo</th>
                                 <th>Valor</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody id="dataTable">
                             <tr>
-                                <td colspan="3" style="text-align: center; color: #999;">Sin datos</td>
+                                <td colspan="4" style="text-align: center; color: #999;">Sin datos</td>
                             </tr>
                         </tbody>
                     </table>
@@ -269,13 +364,12 @@
         <div class="instructions">
             <h3>Instrucciones de uso</h3>
             <ol>
-                <li>Conecta tu micro:bit por USB al ordenador</li>
-                <li>Haz clic en "Conectar micro:bit" y selecciona el puerto USB</li>
-                <li>Los datos comenzarán a aparecer automáticamente en la gráfica</li>
-                <li>Ajusta el intervalo de muestreo para controlar cuántos puntos se muestran</li>
-                <li>Haz clic en puntos de la gráfica o usa la tabla para seleccionar y eliminar datos</li>
-                <li>Edita valores directamente en la tabla</li>
-                <li>Exporta los datos en formato CSV cuando quieras</li>
+                <li><strong>Captura:</strong> Conecta tu micro:bit y los datos se capturarán automáticamente</li>
+                <li><strong>Pausa y edición:</strong> Pausa la captura para editar datos y configurar la gráfica</li>
+                <li><strong>Ejes personalizados:</strong> Nombra los ejes según tu experimento</li>
+                <li><strong>Tiempo cero:</strong> Selecciona un punto en la tabla y establécelo como t=0</li>
+                <li><strong>Ajustes:</strong> Aplica ajustes de curvas para obtener ecuaciones teóricas</li>
+                <li><strong>Exportación:</strong> Descarga tus datos en formato CSV para análisis posterior</li>
             </ol>
         </div>
     </div>
@@ -288,6 +382,8 @@
         let rawData = [];
         let selectedPoints = new Set();
         let chart = null;
+        let timeZeroOffset = 0;
+        let fitData = null;
 
         // Elementos del DOM
         const connectBtn = document.getElementById('connectBtn');
@@ -297,6 +393,17 @@
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
         const intervalInput = document.getElementById('intervalInput');
+        const xAxisLabel = document.getElementById('xAxisLabel');
+        const yAxisLabel = document.getElementById('yAxisLabel');
+        const timeZeroBtn = document.getElementById('timeZeroBtn');
+        const resetTimeBtn = document.getElementById('resetTimeBtn');
+        const timeUnitInput = document.getElementById('timeUnitInput');
+        const fitType = document.getElementById('fitType');
+        const calculateFitBtn = document.getElementById('calculateFitBtn');
+        const clearFitBtn = document.getElementById('clearFitBtn');
+        const fitResults = document.getElementById('fitResults');
+        const fitEquation = document.getElementById('fitEquation');
+        const fitStats = document.getElementById('fitStats');
         const dataTable = document.getElementById('dataTable');
         const status = document.getElementById('status');
         const selectedCount = document.getElementById('selectedCount');
@@ -313,7 +420,7 @@
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Valor',
+                    label: 'Datos experimentales',
                     data: [],
                     borderColor: '#000',
                     backgroundColor: 'rgba(0, 0, 0, 0.1)',
@@ -329,11 +436,23 @@
                 onClick: handleChartClick,
                 plugins: {
                     legend: {
-                        display: false
+                        display: true
                     }
                 },
                 scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Tiempo (s)',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
                     y: {
+                        title: {
+                            display: true,
+                            text: 'Valor',
+                            font: { size: 14, weight: 'bold' }
+                        },
                         beginAtZero: false
                     }
                 }
@@ -404,7 +523,7 @@
             if (isReading) {
                 isReading = false;
                 pauseBtn.textContent = 'Reanudar';
-                status.textContent = 'Estado: Pausado';
+                status.textContent = 'Estado: Pausado - Modo de edición activo';
             } else {
                 startReading();
                 status.textContent = 'Estado: Conectado - Leyendo datos';
@@ -430,14 +549,24 @@
             status.textContent = 'Estado: Desconectado';
         });
 
+        // Calcular tiempo ajustado
+        function getAdjustedTime(timestamp) {
+            const timeUnit = parseFloat(timeUnitInput.value) || 1000;
+            return (timestamp - timeZeroOffset) / timeUnit;
+        }
+
         // Actualizar visualización
         function updateDisplay() {
             const interval = parseInt(intervalInput.value) || 100;
             const step = Math.max(1, Math.floor(interval / 10));
             const displayData = rawData.filter((_, idx) => idx % step === 0);
 
-            // Actualizar gráfica
-            chart.data.labels = displayData.map((_, idx) => idx);
+            // Actualizar etiquetas de ejes
+            chart.options.scales.x.title.text = xAxisLabel.value;
+            chart.options.scales.y.title.text = yAxisLabel.value;
+
+            // Actualizar gráfica - datos experimentales
+            chart.data.labels = displayData.map(d => getAdjustedTime(d.time).toFixed(3));
             chart.data.datasets[0].data = displayData.map(d => d.value);
             chart.data.datasets[0].pointBackgroundColor = displayData.map(d => 
                 selectedPoints.has(d.id) ? '#ff0000' : '#000'
@@ -445,6 +574,12 @@
             chart.data.datasets[0].pointRadius = displayData.map(d => 
                 selectedPoints.has(d.id) ? 6 : 4
             );
+
+            // Actualizar curva de ajuste si existe
+            if (fitData && chart.data.datasets.length > 1) {
+                updateFitCurve(displayData);
+            }
+
             chart.update('none');
 
             // Actualizar tabla
@@ -453,19 +588,21 @@
             // Actualizar controles
             exportBtn.disabled = rawData.length === 0;
             deleteSelectedBtn.disabled = selectedPoints.size === 0;
+            timeZeroBtn.disabled = selectedPoints.size !== 1;
             selectedCount.textContent = selectedPoints.size;
         }
 
         // Actualizar tabla
         function updateTable(displayData) {
             if (displayData.length === 0) {
-                dataTable.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #999;">Sin datos</td></tr>';
+                dataTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">Sin datos</td></tr>';
                 return;
             }
 
             dataTable.innerHTML = displayData.map((d, idx) => `
                 <tr class="${selectedPoints.has(d.id) ? 'selected-row' : ''}" onclick="toggleSelect('${d.id}')">
                     <td>${idx + 1}</td>
+                    <td>${getAdjustedTime(d.time).toFixed(3)}</td>
                     <td>
                         <input type="number" value="${d.value}" 
                                onchange="editValue('${d.id}', this.value)"
@@ -518,13 +655,36 @@
             if (confirm('¿Estás seguro de que quieres eliminar todos los datos?')) {
                 rawData = [];
                 selectedPoints.clear();
+                timeZeroOffset = 0;
+                clearFit();
                 updateDisplay();
             }
         });
 
+        // Establecer tiempo cero
+        timeZeroBtn.addEventListener('click', () => {
+            if (selectedPoints.size === 1) {
+                const selectedId = Array.from(selectedPoints)[0];
+                const point = rawData.find(d => d.id === selectedId);
+                if (point) {
+                    timeZeroOffset = point.time;
+                    updateDisplay();
+                    alert('Tiempo cero establecido en el punto seleccionado');
+                }
+            }
+        });
+
+        // Restablecer tiempo
+        resetTimeBtn.addEventListener('click', () => {
+            timeZeroOffset = 0;
+            updateDisplay();
+        });
+
         // Exportar CSV
         exportBtn.addEventListener('click', () => {
-            const csv = 'Timestamp,Value\n' + rawData.map(d => `${d.time},${d.value}`).join('\n');
+            const csv = 'Tiempo,Valor\n' + rawData.map(d => 
+                `${getAdjustedTime(d.time)},${d.value}`
+            ).join('\n');
             const blob = new Blob([csv], { type: 'text/csv' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -533,8 +693,11 @@
             a.click();
         });
 
-        // Actualizar intervalo
+        // Actualizar intervalo y etiquetas
         intervalInput.addEventListener('change', updateDisplay);
+        xAxisLabel.addEventListener('change', updateDisplay);
+        yAxisLabel.addEventListener('change', updateDisplay);
+        timeUnitInput.addEventListener('change', updateDisplay);
 
         // Click en gráfica
         function handleChartClick(evt) {
@@ -547,6 +710,342 @@
                 if (displayData[dataIndex]) {
                     toggleSelect(displayData[dataIndex].id);
                 }
+            }
+        }
+
+        // ========== AJUSTES DE CURVAS ==========
+
+        // Calcular ajuste
+        calculateFitBtn.addEventListener('click', () => {
+            const type = fitType.value;
+            if (type === 'none') {
+                alert('Selecciona un tipo de ajuste');
+                return;
+            }
+            if (rawData.length < 3) {
+                alert('Se necesitan al menos 3 puntos para calcular un ajuste');
+                return;
+            }
+
+            const interval = parseInt(intervalInput.value) || 100;
+            const step = Math.max(1, Math.floor(interval / 10));
+            const displayData = rawData.filter((_, idx) => idx % step === 0);
+
+            const xData = displayData.map(d => getAdjustedTime(d.time));
+            const yData = displayData.map(d => d.value);
+
+            fitData = calculateFit(type, xData, yData);
+            
+            if (fitData) {
+                displayFitResults(fitData);
+                addFitCurve(displayData);
+            }
+        });
+
+        // Calcular el ajuste según el tipo
+        function calculateFit(type, x, y) {
+            const n = x.length;
+            
+            if (type === 'linear') {
+                // y = mx + b
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+                const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+                
+                const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const b = (sumY - m * sumX) / n;
+                
+                return {
+                    type: 'linear',
+                    params: { m, b },
+                    equation: `y = ${m.toFixed(4)}x + ${b.toFixed(4)}`,
+                    r2: calculateR2(x, y, xi => m * xi + b)
+                };
+            }
+            
+            else if (type === 'quadratic') {
+                // y = ax² + bx + c
+                const result = polynomialFit(x, y, 2);
+                const [c, b, a] = result;
+                return {
+                    type: 'quadratic',
+                    params: { a, b, c },
+                    equation: `y = ${a.toFixed(4)}x² + ${b.toFixed(4)}x + ${c.toFixed(4)}`,
+                    r2: calculateR2(x, y, xi => a * xi * xi + b * xi + c)
+                };
+            }
+            
+            else if (type === 'exponential') {
+                // y = a * e^(bx) -> ln(y) = ln(a) + bx
+                const yPositive = y.every(yi => yi > 0);
+                if (!yPositive) {
+                    alert('Para ajuste exponencial, todos los valores Y deben ser positivos');
+                    return null;
+                }
+                
+                const lnY = y.map(yi => Math.log(yi));
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumLnY = lnY.reduce((a, b) => a + b, 0);
+                const sumXLnY = x.reduce((sum, xi, i) => sum + xi * lnY[i], 0);
+                const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+                
+                const b = (n * sumXLnY - sumX * sumLnY) / (n * sumX2 - sumX * sumX);
+                const lnA = (sumLnY - b * sumX) / n;
+                const a = Math.exp(lnA);
+                
+                return {
+                    type: 'exponential',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)} · e^(${b.toFixed(4)}x)`,
+                    r2: calculateR2(x, y, xi => a * Math.exp(b * xi))
+                };
+            }
+            
+            else if (type === 'power') {
+                // y = a * x^b -> ln(y) = ln(a) + b*ln(x)
+                const xPositive = x.every(xi => xi > 0);
+                const yPositive = y.every(yi => yi > 0);
+                if (!xPositive || !yPositive) {
+                    alert('Para ajuste potencial, todos los valores X e Y deben ser positivos');
+                    return null;
+                }
+                
+                const lnX = x.map(xi => Math.log(xi));
+                const lnY = y.map(yi => Math.log(yi));
+                const sumLnX = lnX.reduce((a, b) => a + b, 0);
+                const sumLnY = lnY.reduce((a, b) => a + b, 0);
+                const sumLnXLnY = lnX.reduce((sum, lnXi, i) => sum + lnXi * lnY[i], 0);
+                const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
+                
+                const b = (n * sumLnXLnY - sumLnX * sumLnY) / (n * sumLnX2 - sumLnX * sumLnX);
+                const lnA = (sumLnY - b * sumLnX) / n;
+                const a = Math.exp(lnA);
+                
+                return {
+                    type: 'power',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)} · x^${b.toFixed(4)}`,
+                    r2: calculateR2(x, y, xi => a * Math.pow(xi, b))
+                };
+            }
+            
+            else if (type === 'logarithmic') {
+                // y = a * ln(x) + b
+                const xPositive = x.every(xi => xi > 0);
+                if (!xPositive) {
+                    alert('Para ajuste logarítmico, todos los valores X deben ser positivos');
+                    return null;
+                }
+                
+                const lnX = x.map(xi => Math.log(xi));
+                const sumLnX = lnX.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumLnXY = lnX.reduce((sum, lnXi, i) => sum + lnXi * y[i], 0);
+                const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
+                
+                const a = (n * sumLnXY - sumLnX * sumY) / (n * sumLnX2 - sumLnX * sumLnX);
+                const b = (sumY - a * sumLnX) / n;
+                
+                return {
+                    type: 'logarithmic',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)} · ln(x) + ${b.toFixed(4)}`,
+                    r2: calculateR2(x, y, xi => a * Math.log(xi) + b)
+                };
+            }
+            
+            return null;
+        }
+
+        // Ajuste polinomial usando mínimos cuadrados
+        function polynomialFit(x, y, degree) {
+            const n = x.length;
+            const matrix = [];
+            const result = [];
+            
+            // Construir matriz de Vandermonde
+            for (let i = 0; i <= degree; i++) {
+                const row = [];
+                for (let j = 0; j <= degree; j++) {
+                    let sum = 0;
+                    for (let k = 0; k < n; k++) {
+                        sum += Math.pow(x[k], i + j);
+                    }
+                    row.push(sum);
+                }
+                matrix.push(row);
+                
+                let sum = 0;
+                for (let k = 0; k < n; k++) {
+                    sum += y[k] * Math.pow(x[k], i);
+                }
+                result.push(sum);
+            }
+            
+            // Resolver sistema de ecuaciones (Gauss)
+            return gaussElimination(matrix, result);
+        }
+
+        // Eliminación gaussiana
+        function gaussElimination(matrix, result) {
+            const n = matrix.length;
+            const augmented = matrix.map((row, i) => [...row, result[i]]);
+            
+            // Forward elimination
+            for (let i = 0; i < n; i++) {
+                // Pivote
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+                        maxRow = k;
+                    }
+                }
+                [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+                
+                // Hacer ceros debajo del pivote
+                for (let k = i + 1; k < n; k++) {
+                    const factor = augmented[k][i] / augmented[i][i];
+                    for (let j = i; j <= n; j++) {
+                        augmented[k][j] -= factor * augmented[i][j];
+                    }
+                }
+            }
+            
+            // Back substitution
+            const solution = new Array(n);
+            for (let i = n - 1; i >= 0; i--) {
+                solution[i] = augmented[i][n];
+                for (let j = i + 1; j < n; j++) {
+                    solution[i] -= augmented[i][j] * solution[j];
+                }
+                solution[i] /= augmented[i][i];
+            }
+            
+            return solution;
+        }
+
+        // Calcular R² (coeficiente de determinación)
+        function calculateR2(x, y, fitFunction) {
+            const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+            let ssRes = 0;
+            let ssTot = 0;
+            
+            for (let i = 0; i < x.length; i++) {
+                const yFit = fitFunction(x[i]);
+                ssRes += Math.pow(y[i] - yFit, 2);
+                ssTot += Math.pow(y[i] - yMean, 2);
+            }
+            
+            return 1 - (ssRes / ssTot);
+        }
+
+        // Mostrar resultados del ajuste
+        function displayFitResults(fit) {
+            fitResults.style.display = 'block';
+            fitEquation.innerHTML = `<p><strong>Ecuación:</strong> ${fit.equation}</p>`;
+            fitStats.innerHTML = `
+                <p><strong>R²:</strong> ${fit.r2.toFixed(6)} ${fit.r2 > 0.95 ? '(Excelente ajuste)' : fit.r2 > 0.85 ? '(Buen ajuste)' : '(Ajuste regular)'}</p>
+                <p style="margin-top: 10px;"><strong>Parámetros:</strong></p>
+                <pre>${JSON.stringify(fit.params, null, 2)}</pre>
+            `;
+        }
+
+        // Añadir curva de ajuste a la gráfica
+        function addFitCurve(displayData) {
+            // Eliminar dataset anterior si existe
+            if (chart.data.datasets.length > 1) {
+                chart.data.datasets.pop();
+            }
+            
+            // Generar puntos para la curva suave
+            const xData = displayData.map(d => getAdjustedTime(d.time));
+            const xMin = Math.min(...xData);
+            const xMax = Math.max(...xData);
+            const numPoints = 100;
+            const step = (xMax - xMin) / numPoints;
+            
+            const fitPoints = [];
+            const fitLabels = [];
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const x = xMin + i * step;
+                const y = evaluateFit(fitData, x);
+                if (!isNaN(y) && isFinite(y)) {
+                    fitPoints.push(y);
+                    fitLabels.push(x.toFixed(3));
+                }
+            }
+            
+            // Añadir dataset de ajuste
+            chart.data.datasets.push({
+                label: 'Ajuste teórico',
+                data: fitPoints,
+                borderColor: '#2196F3',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                pointRadius: 0,
+                tension: 0.4
+            });
+            
+            chart.update();
+        }
+
+        // Actualizar curva de ajuste
+        function updateFitCurve(displayData) {
+            if (!fitData || chart.data.datasets.length < 2) return;
+            
+            const xData = displayData.map(d => getAdjustedTime(d.time));
+            const xMin = Math.min(...xData);
+            const xMax = Math.max(...xData);
+            const numPoints = 100;
+            const step = (xMax - xMin) / numPoints;
+            
+            const fitPoints = [];
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const x = xMin + i * step;
+                const y = evaluateFit(fitData, x);
+                if (!isNaN(y) && isFinite(y)) {
+                    fitPoints.push(y);
+                }
+            }
+            
+            chart.data.datasets[1].data = fitPoints;
+        }
+
+        // Evaluar función de ajuste en un punto
+        function evaluateFit(fit, x) {
+            switch (fit.type) {
+                case 'linear':
+                    return fit.params.m * x + fit.params.b;
+                case 'quadratic':
+                    return fit.params.a * x * x + fit.params.b * x + fit.params.c;
+                case 'exponential':
+                    return fit.params.a * Math.exp(fit.params.b * x);
+                case 'power':
+                    return fit.params.a * Math.pow(x, fit.params.b);
+                case 'logarithmic':
+                    return fit.params.a * Math.log(x) + fit.params.b;
+                default:
+                    return 0;
+            }
+        }
+
+        // Limpiar ajuste
+        clearFitBtn.addEventListener('click', () => {
+            clearFit();
+        });
+
+        function clearFit() {
+            fitData = null;
+            fitResults.style.display = 'none';
+            fitType.value = 'none';
+            
+            // Eliminar dataset de ajuste
+            if (chart.data.datasets.length > 1) {
+                chart.data.datasets.pop();
+                chart.update();
             }
         }
     </script>
