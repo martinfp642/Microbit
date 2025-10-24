@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>micro:bit Visualizador Avanzado</title>
+    <title>micro:bit DataLab</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -15,482 +15,809 @@
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             background: white;
-            padding: 20px;
+            color: #000;
         }
         
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-        
-        .header {
-            border-bottom: 3px solid black;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-        }
-        
-        h2 {
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-        }
-        
-        .subtitle {
-            color: #666;
-            font-size: 1rem;
-        }
-        
-        .controls {
-            margin-bottom: 30px;
+        /* Toolbar minimalista */
+        .toolbar {
+            background: white;
+            border-bottom: 2px solid black;
+            padding: 12px 16px;
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 8px;
             align-items: center;
         }
         
-        button {
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
-            border: none;
+        .toolbar-btn {
+            background: white;
+            border: 2px solid black;
+            padding: 8px 16px;
             cursor: pointer;
-            transition: all 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.2s;
         }
         
-        .btn-primary {
+        .toolbar-btn:hover:not(:disabled) {
             background: black;
             color: white;
         }
         
-        .btn-primary:hover:not(:disabled) {
-            background: #333;
-        }
-        
-        .btn-secondary {
-            background: white;
-            color: black;
-            border: 2px solid black;
-        }
-        
-        .btn-secondary:hover:not(:disabled) {
-            background: #f0f0f0;
-        }
-        
-        .btn-success {
-            background: #2196F3;
-            color: white;
-        }
-        
-        .btn-success:hover:not(:disabled) {
-            background: #1976D2;
-        }
-        
-        button:disabled {
-            opacity: 0.4;
+        .toolbar-btn:disabled {
+            opacity: 0.3;
             cursor: not-allowed;
         }
         
-        .panel {
+        .toolbar-btn.primary {
+            background: black;
+            color: white;
+        }
+        
+        .toolbar-btn.primary:hover:not(:disabled) {
+            background: #333;
+        }
+        
+        .toolbar-separator {
+            width: 2px;
+            height: 24px;
+            background: black;
+            margin: 0 4px;
+        }
+        
+        .status-text {
+            margin-left: auto;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 8px 16px;
             border: 2px solid black;
-            padding: 20px;
-            margin-bottom: 30px;
         }
         
-        .grid {
+        /* Layout principal */
+        .main-container {
             display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 30px;
-            margin-bottom: 30px;
+            grid-template-columns: 1fr 320px;
+            height: calc(100vh - 58px);
         }
         
-        @media (max-width: 1024px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
+        /* Panel de gráfica */
+        .graph-panel {
+            background: white;
+            border-right: 2px solid black;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .graph-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         
         .chart-container {
+            flex: 1;
             position: relative;
-            height: 450px;
-            margin-top: 20px;
+            min-height: 400px;
         }
         
-        .table-container {
-            max-height: 500px;
+        /* Panel lateral */
+        .side-panel {
+            background: white;
+            display: flex;
+            flex-direction: column;
             overflow-y: auto;
-            margin-top: 20px;
         }
         
-        table {
+        .panel-section {
+            border-bottom: 2px solid black;
+        }
+        
+        .section-header {
+            background: white;
+            padding: 12px 16px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #ccc;
+        }
+        
+        .section-header:hover {
+            background: #f5f5f5;
+        }
+        
+        .section-content {
+            padding: 16px;
+            background: white;
+        }
+        
+        .section-content.collapsed {
+            display: none;
+        }
+        
+        .input-row {
+            margin-bottom: 12px;
+        }
+        
+        .input-row label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .input-row input, .input-row select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid black;
+            font-size: 0.9rem;
+            background: white;
+        }
+        
+        .input-row input:focus, .input-row select:focus {
+            outline: none;
+            background: #f5f5f5;
+        }
+        
+        .btn-full {
+            width: 100%;
+            margin-top: 8px;
+        }
+        
+        /* Tabla minimalista */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
+            font-size: 0.85rem;
         }
         
-        th {
-            text-align: left;
-            padding: 10px;
-            border-bottom: 2px solid black;
+        .data-table thead {
             position: sticky;
             top: 0;
             background: white;
         }
         
-        td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        
-        input[type="number"], input[type="text"], select {
+        .data-table th {
             padding: 8px;
-            border: 2px solid black;
-            font-size: 0.9rem;
+            text-align: left;
+            border-bottom: 2px solid black;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.75rem;
         }
         
-        .selected-row {
+        .data-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-table tr:hover {
+            background: #f5f5f5;
+        }
+        
+        .data-table tr.selected {
             background: #e0e0e0;
+        }
+        
+        .data-table input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            padding: 4px;
+            font-size: 0.85rem;
+        }
+        
+        .data-table input:focus {
+            background: white;
+            border: 1px solid black;
+            outline: none;
         }
         
         .delete-btn {
             background: none;
             border: none;
-            color: #666;
             cursor: pointer;
-            padding: 5px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 0 4px;
         }
         
         .delete-btn:hover {
-            color: #ff0000;
+            color: #666;
         }
         
-        .stats {
-            margin-left: auto;
-            font-weight: 600;
-        }
-        
-        .instructions {
-            background: #f5f5f5;
-            padding: 20px;
+        /* Caja de resultados minimalista */
+        .fit-box {
+            background: white;
             border: 2px solid black;
-        }
-        
-        .instructions h3 {
-            margin-bottom: 15px;
-        }
-        
-        .instructions ol {
-            margin-left: 20px;
-        }
-        
-        .instructions li {
-            margin-bottom: 8px;
-        }
-        
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-        
-        .input-group label {
-            font-weight: 600;
-            white-space: nowrap;
-            min-width: 120px;
-        }
-        
-        .input-group input, .input-group select {
-            flex: 1;
-            max-width: 200px;
-        }
-        
-        .status {
-            padding: 8px 16px;
-            background: #f0f0f0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-        
-        .fit-results {
-            background: #f9f9f9;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #ddd;
-        }
-        
-        .fit-results h4 {
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-        
-        .fit-results p {
-            margin: 5px 0;
+            padding: 12px;
+            margin-top: 12px;
             font-family: 'Courier New', monospace;
         }
         
-        .section-title {
-            font-weight: bold;
-            margin-top: 20px;
-            margin-bottom: 10px;
-            padding-bottom: 5px;
-            border-bottom: 2px solid black;
+        .fit-box .title {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+        
+        .fit-box .equation {
+            font-size: 1.1rem;
+            margin: 8px 0;
+            font-weight: 600;
+        }
+        
+        .fit-box .stats {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        
+        /* Herramienta examine */
+        .examine-line {
+            position: absolute;
+            width: 2px;
+            background: black;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .examine-label {
+            position: absolute;
+            background: white;
+            border: 2px solid black;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            display: none;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Stats modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border: 3px solid black;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+        }
+        
+        .modal-header {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .modal-body {
+            font-family: 'Courier New', monospace;
+            line-height: 2;
+        }
+        
+        .modal-close {
+            margin-top: 16px;
+            width: 100%;
+        }
+        
+        /* Video modal */
+        .video-modal {
+            max-width: 900px;
+            width: 95%;
+        }
+        
+        .video-container {
+            background: black;
+            border: 2px solid black;
+            margin-top: 16px;
+            position: relative;
+        }
+        
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-info {
+            padding: 12px;
+            background: white;
+            border-top: 2px solid black;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .video-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        /* Camera preview */
+        .camera-preview {
+            background: black;
+            border: 2px solid black;
+            margin-top: 12px;
+            position: relative;
+        }
+        
+        .camera-preview video {
+            width: 100%;
+            display: block;
+        }
+        
+        .recording-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: black;
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: none;
+        }
+        
+        .recording-indicator.active {
+            display: block;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .graph-panel {
+                border-right: none;
+                border-bottom: 2px solid black;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>micro:bit Data Visualizer Pro</h1>
-            <p class="subtitle">Captura, edita, ajusta y analiza datos en tiempo real</p>
-        </div>
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <button id="connectBtn" class="toolbar-btn primary">CONECTAR</button>
+        <button id="collectBtn" class="toolbar-btn primary" style="display:none;">CAPTURAR</button>
+        <button id="stopBtn" class="toolbar-btn" style="display:none;">DETENER</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <button id="cameraBtn" class="toolbar-btn">CÁMARA</button>
+        <button id="examineBtn" class="toolbar-btn">EXAMINE</button>
+        <button id="statsBtn" class="toolbar-btn">ESTADÍSTICAS</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR</button>
+        <button id="clearBtn" class="toolbar-btn">LIMPIAR</button>
+        
+        <span class="status-text" id="statusText">DESCONECTADO</span>
+    </div>
 
-        <!-- CONEXIÓN -->
-        <div class="controls">
-            <button id="connectBtn" class="btn-primary">Conectar micro:bit</button>
-            <button id="pauseBtn" class="btn-primary" style="display:none;">Pausar</button>
-            <button id="disconnectBtn" class="btn-secondary" style="display:none;">Desconectar</button>
-            <span id="status" class="stats">Estado: Desconectado</span>
-        </div>
-
-        <!-- CONTROLES BÁSICOS -->
-        <div class="panel">
-            <div class="section-title">Controles Básicos</div>
-            <div class="input-group">
-                <label for="intervalInput">Intervalo de muestreo (ms):</label>
-                <input type="number" id="intervalInput" value="100" min="1">
-                
-                <button id="deleteSelectedBtn" class="btn-primary" disabled>
-                    Eliminar seleccionados (<span id="selectedCount">0</span>)
-                </button>
-                
-                <button id="exportBtn" class="btn-secondary" disabled>
-                    Exportar CSV
-                </button>
-                
-                <button id="clearBtn" class="btn-secondary">
-                    Limpiar todo
-                </button>
+    <!-- Main -->
+    <div class="main-container">
+        <!-- Gráfica -->
+        <div class="graph-panel">
+            <div class="graph-title" id="graphTitle">VALOR vs TIEMPO</div>
+            <div class="chart-container">
+                <canvas id="myChart"></canvas>
+                <div class="examine-line" id="examineLine"></div>
+                <div class="examine-label" id="examineLabel"></div>
             </div>
         </div>
 
-        <!-- CONFIGURACIÓN DE EJES -->
-        <div class="panel">
-            <div class="section-title">Configuración de Ejes</div>
-            <div class="input-group">
-                <label for="xAxisLabel">Etiqueta eje X:</label>
-                <input type="text" id="xAxisLabel" value="Tiempo (s)" placeholder="Eje X">
-            </div>
-            <div class="input-group">
-                <label for="yAxisLabel">Etiqueta eje Y:</label>
-                <input type="text" id="yAxisLabel" value="Valor" placeholder="Eje Y">
-            </div>
-            <div class="input-group">
-                <label for="timeZeroBtn">Establecer tiempo cero:</label>
-                <button id="timeZeroBtn" class="btn-secondary" disabled>
-                    Usar punto seleccionado como t=0
-                </button>
-                <button id="resetTimeBtn" class="btn-secondary">
-                    Restablecer tiempo original
-                </button>
-            </div>
-            <div class="input-group">
-                <label for="timeUnitInput">Unidad de tiempo (ms):</label>
-                <input type="number" id="timeUnitInput" value="1000" min="1" placeholder="1000 = segundos">
-                <span style="color: #666;">1000 = segundos, 1 = milisegundos</span>
-            </div>
-        </div>
-
-        <!-- AJUSTES DE CURVAS -->
-        <div class="panel">
-            <div class="section-title">Ajustes de Curvas (Mínimos Cuadrados)</div>
-            <div class="input-group">
-                <label for="fitType">Tipo de ajuste:</label>
-                <select id="fitType">
-                    <option value="none">Ninguno</option>
-                    <option value="linear">Lineal (y = mx + b)</option>
-                    <option value="quadratic">Cuadrático (y = ax² + bx + c)</option>
-                    <option value="exponential">Exponencial (y = a·e^(bx))</option>
-                    <option value="power">Potencial (y = a·x^b)</option>
-                    <option value="logarithmic">Logarítmico (y = a·ln(x) + b)</option>
-                </select>
-                <button id="calculateFitBtn" class="btn-success">Calcular Ajuste</button>
-                <button id="clearFitBtn" class="btn-secondary">Limpiar Ajuste</button>
-            </div>
-            <div id="fitResults" class="fit-results" style="display:none;">
-                <h4>Resultados del Ajuste</h4>
-                <div id="fitEquation"></div>
-                <div id="fitStats"></div>
-            </div>
-        </div>
-
-        <div class="grid">
-            <!-- GRÁFICA -->
-            <div class="panel">
-                <h2>Gráfica</h2>
-                <div class="chart-container">
-                    <canvas id="myChart"></canvas>
+        <!-- Panel lateral -->
+        <div class="side-panel">
+            <!-- Video -->
+            <div class="panel-section" id="videoSection" style="display:none;">
+                <div class="section-header" onclick="toggleSection(this)">
+                    VIDEO <span>▼</span>
                 </div>
-                <p style="margin-top: 15px; color: #666; font-size: 0.9rem;">
-                    Haz clic en los puntos de la gráfica para seleccionarlos
-                </p>
+                <div class="section-content">
+                    <div class="camera-preview">
+                        <video id="cameraPreview" autoplay muted></video>
+                        <div class="recording-indicator" id="recordingIndicator">● REC</div>
+                    </div>
+                    <button class="toolbar-btn btn-full" id="stopCameraBtn">
+                        DETENER CÁMARA
+                    </button>
+                </div>
             </div>
 
-            <!-- TABLA DE DATOS -->
-            <div class="panel">
-                <h2>Datos</h2>
-                <div class="table-container">
-                    <table>
+            <!-- Configuración -->
+            <div class="panel-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    CONFIGURACIÓN <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Eje X</label>
+                        <input type="text" id="xAxisLabel" value="Tiempo (s)">
+                    </div>
+                    <div class="input-row">
+                        <label>Eje Y</label>
+                        <input type="text" id="yAxisLabel" value="Valor">
+                    </div>
+                    <div class="input-row">
+                        <label>Unidad tiempo</label>
+                        <select id="timeUnit">
+                            <option value="1">Milisegundos</option>
+                            <option value="1000" selected>Segundos</option>
+                            <option value="60000">Minutos</option>
+                        </select>
+                    </div>
+                    <button class="toolbar-btn btn-full" id="setZeroBtn" disabled>
+                        ESTABLECER T=0
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ajuste -->
+            <div class="panel-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    AJUSTE DE CURVA <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Tipo</label>
+                        <select id="fitType">
+                            <option value="none">Ninguno</option>
+                            <option value="linear">Lineal</option>
+                            <option value="quadratic">Cuadrático</option>
+                            <option value="exponential">Exponencial</option>
+                            <option value="power">Potencial</option>
+                            <option value="logarithmic">Logarítmico</option>
+                        </select>
+                    </div>
+                    <button class="toolbar-btn primary btn-full" id="calculateFitBtn">
+                        CALCULAR
+                    </button>
+                    <button class="toolbar-btn btn-full" id="clearFitBtn">
+                        LIMPIAR
+                    </button>
+                    <div id="fitResults"></div>
+                </div>
+            </div>
+
+            <!-- Datos -->
+            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="section-header" onclick="toggleSection(this)">
+                    DATOS <span>▼</span>
+                </div>
+                <div class="section-content" style="flex: 1; overflow-y: auto; max-height: 400px; padding: 0;">
+                    <table class="data-table">
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Tiempo</th>
-                                <th>Valor</th>
+                                <th>T</th>
+                                <th>Y</th>
+                                <th>📹</th>
                                 <th></th>
                             </tr>
                         </thead>
-                        <tbody id="dataTable">
+                        <tbody id="dataTableBody">
                             <tr>
-                                <td colspan="4" style="text-align: center; color: #999;">Sin datos</td>
+                                <td colspan="5" style="text-align: center; padding: 20px;">SIN DATOS</td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="instructions">
-            <h3>Instrucciones de uso</h3>
-            <ol>
-                <li><strong>Captura:</strong> Conecta tu micro:bit y los datos se capturarán automáticamente</li>
-                <li><strong>Pausa y edición:</strong> Pausa la captura para editar datos y configurar la gráfica</li>
-                <li><strong>Ejes personalizados:</strong> Nombra los ejes según tu experimento</li>
-                <li><strong>Tiempo cero:</strong> Selecciona un punto en la tabla y establécelo como t=0</li>
-                <li><strong>Ajustes:</strong> Aplica ajustes de curvas para obtener ecuaciones teóricas</li>
-                <li><strong>Exportación:</strong> Descarga tus datos en formato CSV para análisis posterior</li>
-            </ol>
+    <!-- Modal de estadísticas -->
+    <div class="modal" id="statsModal">
+        <div class="modal-content">
+            <div class="modal-header">ESTADÍSTICAS</div>
+            <div class="modal-body" id="statsBody"></div>
+            <button class="toolbar-btn primary modal-close" onclick="closeStatsModal()">CERRAR</button>
+        </div>
+    </div>
+
+    <!-- Modal de video -->
+    <div class="modal" id="videoModal">
+        <div class="modal-content video-modal">
+            <div class="modal-header">REPRODUCCIÓN DE VIDEO</div>
+            <div class="video-container">
+                <video id="playbackVideo" controls></video>
+            </div>
+            <div class="video-info" id="videoInfo"></div>
+            <div class="video-controls">
+                <button class="toolbar-btn primary" onclick="closeVideoModal()">CERRAR</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Estado de la aplicación
-        let port = null;
-        let reader = null;
-        let isReading = false;
-        let rawData = [];
-        let selectedPoints = new Set();
-        let chart = null;
-        let timeZeroOffset = 0;
-        let fitData = null;
+        // Estado
+        let state = {
+            port: null,
+            reader: null,
+            isConnected: false,
+            isCollecting: false,
+            rawData: [],
+            selectedPoints: new Set(),
+            timeZeroOffset: 0,
+            fitData: null,
+            examineMode: false,
+            // Video
+            cameraActive: false,
+            mediaStream: null,
+            mediaRecorder: null,
+            recordedChunks: [],
+            videoBlob: null,
+            recordingStartTime: null
+        };
 
-        // Elementos del DOM
+        // DOM
         const connectBtn = document.getElementById('connectBtn');
-        const pauseBtn = document.getElementById('pauseBtn');
-        const disconnectBtn = document.getElementById('disconnectBtn');
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+        const collectBtn = document.getElementById('collectBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
+        const examineBtn = document.getElementById('examineBtn');
+        const statsBtn = document.getElementById('statsBtn');
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
-        const intervalInput = document.getElementById('intervalInput');
+        const statusText = document.getElementById('statusText');
         const xAxisLabel = document.getElementById('xAxisLabel');
         const yAxisLabel = document.getElementById('yAxisLabel');
-        const timeZeroBtn = document.getElementById('timeZeroBtn');
-        const resetTimeBtn = document.getElementById('resetTimeBtn');
-        const timeUnitInput = document.getElementById('timeUnitInput');
+        const timeUnit = document.getElementById('timeUnit');
+        const setZeroBtn = document.getElementById('setZeroBtn');
         const fitType = document.getElementById('fitType');
         const calculateFitBtn = document.getElementById('calculateFitBtn');
         const clearFitBtn = document.getElementById('clearFitBtn');
         const fitResults = document.getElementById('fitResults');
-        const fitEquation = document.getElementById('fitEquation');
-        const fitStats = document.getElementById('fitStats');
-        const dataTable = document.getElementById('dataTable');
-        const status = document.getElementById('status');
-        const selectedCount = document.getElementById('selectedCount');
+        const dataTableBody = document.getElementById('dataTableBody');
+        const graphTitle = document.getElementById('graphTitle');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const videoSection = document.getElementById('videoSection');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+        const playbackVideo = document.getElementById('playbackVideo');
+        const videoInfo = document.getElementById('videoInfo');
 
-        // Verificar soporte de Web Serial API
         if (!('serial' in navigator)) {
-            alert('Tu navegador no soporta Web Serial API. Usa Chrome, Edge u Opera en escritorio.');
+            alert('Web Serial API no soportada. Usa Chrome, Edge u Opera.');
         }
 
-        // Inicializar gráfica
+        // Gráfica
         const ctx = document.getElementById('myChart').getContext('2d');
-        chart = new Chart(ctx, {
+        const chart = new Chart(ctx, {
             type: 'line',
             data: {
                 labels: [],
                 datasets: [{
-                    label: 'Datos experimentales',
+                    label: 'Datos',
                     data: [],
                     borderColor: '#000',
-                    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+                    backgroundColor: 'transparent',
                     borderWidth: 2,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    pointBackgroundColor: '#000'
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: '#000',
+                    pointBorderColor: '#000',
+                    tension: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
                 onClick: handleChartClick,
+                onHover: handleChartHover,
                 plugins: {
-                    legend: {
-                        display: true
-                    }
+                    legend: { display: false },
+                    tooltip: { enabled: false }
                 },
                 scales: {
                     x: {
                         title: {
                             display: true,
-                            text: 'Tiempo (s)',
-                            font: { size: 14, weight: 'bold' }
-                        }
+                            text: 'TIEMPO (S)',
+                            font: { size: 11, weight: 'bold' }
+                        },
+                        grid: { color: '#e0e0e0', borderColor: '#000', borderWidth: 2 },
+                        ticks: { font: { size: 10 } }
                     },
                     y: {
                         title: {
                             display: true,
-                            text: 'Valor',
-                            font: { size: 14, weight: 'bold' }
+                            text: 'VALOR',
+                            font: { size: 11, weight: 'bold' }
                         },
-                        beginAtZero: false
+                        grid: { color: '#e0e0e0', borderColor: '#000', borderWidth: 2 },
+                        ticks: { font: { size: 10 } }
                     }
                 }
             }
         });
 
-        // Conectar al puerto serial
-        connectBtn.addEventListener('click', async () => {
-            try {
-                port = await navigator.serial.requestPort();
-                await port.open({ baudRate: 115200 });
-                
-                connectBtn.style.display = 'none';
-                pauseBtn.style.display = 'inline-block';
-                disconnectBtn.style.display = 'inline-block';
-                status.textContent = 'Estado: Conectado - Leyendo datos';
-                
-                startReading();
-            } catch (err) {
-                console.error('Error:', err);
-                alert('No se pudo conectar. Error: ' + err.message);
+        // ========== CÁMARA ==========
+
+        cameraBtn.addEventListener('click', async () => {
+            if (!state.cameraActive) {
+                try {
+                    state.mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true, 
+                        audio: false 
+                    });
+                    cameraPreview.srcObject = state.mediaStream;
+                    state.cameraActive = true;
+                    videoSection.style.display = 'block';
+                    cameraBtn.classList.add('primary');
+                } catch (err) {
+                    alert('No se pudo acceder a la cámara: ' + err.message);
+                }
             }
         });
 
-        // Leer datos del puerto
-        async function startReading() {
-            isReading = true;
-            pauseBtn.textContent = 'Pausar';
+        stopCameraBtn.addEventListener('click', () => {
+            stopCamera();
+        });
+
+        function stopCamera() {
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(track => track.stop());
+                state.mediaStream = null;
+                cameraPreview.srcObject = null;
+            }
+            state.cameraActive = false;
+            videoSection.style.display = 'none';
+            cameraBtn.classList.remove('primary');
             
+            if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+                state.mediaRecorder.stop();
+            }
+        }
+
+        function startVideoRecording() {
+            if (!state.cameraActive || !state.mediaStream) return;
+            
+            state.recordedChunks = [];
+            state.recordingStartTime = Date.now();
+            
+            state.mediaRecorder = new MediaRecorder(state.mediaStream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+            
+            state.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    state.recordedChunks.push(event.data);
+                }
+            };
+            
+            state.mediaRecorder.onstop = () => {
+                state.videoBlob = new Blob(state.recordedChunks, { type: 'video/webm' });
+            };
+            
+            state.mediaRecorder.start();
+            recordingIndicator.classList.add('active');
+        }
+
+        function stopVideoRecording() {
+            if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+                state.mediaRecorder.stop();
+                recordingIndicator.classList.remove('active');
+            }
+        }
+
+        function showVideoAtTime(dataPoint) {
+            if (!state.videoBlob) {
+                alert('No hay video grabado para este experimento');
+                return;
+            }
+            
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const adjustedTime = (dataPoint.time - state.timeZeroOffset) / timeUnitValue;
+            const videoTime = (dataPoint.time - state.recordingStartTime) / 1000; // segundos
+            
+            if (videoTime < 0) {
+                alert('Este punto fue capturado antes de iniciar la grabación');
+                return;
+            }
+            
+            // Crear URL del video
+            const videoURL = URL.createObjectURL(state.videoBlob);
+            playbackVideo.src = videoURL;
+            
+            // Ir al momento específico
+            playbackVideo.currentTime = videoTime;
+            
+            // Mostrar info
+            videoInfo.innerHTML = `
+                TIEMPO: ${adjustedTime.toFixed(3)} ${xAxisLabel.value}<br>
+                VALOR: ${dataPoint.value.toFixed(4)}<br>
+                VIDEO EN: ${videoTime.toFixed(2)} segundos
+            `;
+            
+            document.getElementById('videoModal').classList.add('active');
+        }
+
+        // ========== CONEXIÓN MICRO:BIT ==========
+
+        connectBtn.addEventListener('click', async () => {
+            try {
+                state.port = await navigator.serial.requestPort();
+                await state.port.open({ baudRate: 115200 });
+                state.isConnected = true;
+                
+                connectBtn.style.display = 'none';
+                collectBtn.style.display = 'inline-block';
+                statusText.textContent = 'CONECTADO';
+            } catch (err) {
+                alert('Error: ' + err.message);
+            }
+        });
+
+        collectBtn.addEventListener('click', () => {
+            state.isCollecting = true;
+            collectBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            statusText.textContent = 'CAPTURANDO';
+            
+            // Iniciar grabación de video si la cámara está activa
+            if (state.cameraActive) {
+                startVideoRecording();
+            }
+            
+            startReading();
+        });
+
+        stopBtn.addEventListener('click', () => {
+            state.isCollecting = false;
+            collectBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            statusText.textContent = 'PAUSADO';
+            
+            // Detener grabación de video
+            stopVideoRecording();
+        });
+
+        async function startReading() {
             const textDecoder = new TextDecoderStream();
-            const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-            reader = textDecoder.readable.getReader();
+            const readableStreamClosed = state.port.readable.pipeTo(textDecoder.writable);
+            state.reader = textDecoder.readable.getReader();
 
             let buffer = '';
 
             try {
-                while (isReading) {
-                    const { value, done } = await reader.read();
+                while (state.isCollecting) {
+                    const { value, done } = await state.reader.read();
                     if (done) break;
                     
                     buffer += value;
@@ -503,7 +830,7 @@
                             const numValue = parseFloat(trimmed);
                             if (!isNaN(numValue)) {
                                 const timestamp = Date.now();
-                                rawData.push({
+                                state.rawData.push({
                                     time: timestamp,
                                     value: numValue,
                                     id: `${timestamp}-${Math.random()}`
@@ -514,240 +841,141 @@
                     }
                 }
             } catch (err) {
-                console.error('Error leyendo:', err);
+                console.error(err);
             }
         }
 
-        // Pausar/Reanudar
-        pauseBtn.addEventListener('click', () => {
-            if (isReading) {
-                isReading = false;
-                pauseBtn.textContent = 'Reanudar';
-                status.textContent = 'Estado: Pausado - Modo de edición activo';
-            } else {
-                startReading();
-                status.textContent = 'Estado: Conectado - Leyendo datos';
-            }
-        });
+        // ========== VISUALIZACIÓN ==========
 
-        // Desconectar
-        disconnectBtn.addEventListener('click', async () => {
-            isReading = false;
-            if (reader) {
-                await reader.cancel();
-                reader.releaseLock();
-            }
-            if (port) {
-                await port.close();
-            }
-            
-            port = null;
-            reader = null;
-            connectBtn.style.display = 'inline-block';
-            pauseBtn.style.display = 'none';
-            disconnectBtn.style.display = 'none';
-            status.textContent = 'Estado: Desconectado';
-        });
-
-        // Calcular tiempo ajustado
-        function getAdjustedTime(timestamp) {
-            const timeUnit = parseFloat(timeUnitInput.value) || 1000;
-            return (timestamp - timeZeroOffset) / timeUnit;
-        }
-
-        // Actualizar visualización
         function updateDisplay() {
-            const interval = parseInt(intervalInput.value) || 100;
-            const step = Math.max(1, Math.floor(interval / 10));
-            const displayData = rawData.filter((_, idx) => idx % step === 0);
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const displayData = state.rawData.map(d => ({
+                ...d,
+                adjustedTime: (d.time - state.timeZeroOffset) / timeUnitValue
+            }));
 
-            // Actualizar etiquetas de ejes
-            chart.options.scales.x.title.text = xAxisLabel.value;
-            chart.options.scales.y.title.text = yAxisLabel.value;
+            graphTitle.textContent = `${yAxisLabel.value.toUpperCase()} vs ${xAxisLabel.value.toUpperCase()}`;
+            chart.options.scales.x.title.text = xAxisLabel.value.toUpperCase();
+            chart.options.scales.y.title.text = yAxisLabel.value.toUpperCase();
 
-            // Actualizar gráfica - datos experimentales
-            chart.data.labels = displayData.map(d => getAdjustedTime(d.time).toFixed(3));
+            chart.data.labels = displayData.map(d => d.adjustedTime.toFixed(3));
             chart.data.datasets[0].data = displayData.map(d => d.value);
-            chart.data.datasets[0].pointBackgroundColor = displayData.map(d => 
-                selectedPoints.has(d.id) ? '#ff0000' : '#000'
+            chart.data.datasets[0].pointBackgroundColor = displayData.map(d =>
+                state.selectedPoints.has(d.id) ? '#666' : '#000'
             );
-            chart.data.datasets[0].pointRadius = displayData.map(d => 
-                selectedPoints.has(d.id) ? 6 : 4
+            chart.data.datasets[0].pointRadius = displayData.map(d =>
+                state.selectedPoints.has(d.id) ? 6 : 3
             );
 
-            // Actualizar curva de ajuste si existe
-            if (fitData && chart.data.datasets.length > 1) {
+            if (state.fitData && chart.data.datasets.length > 1) {
                 updateFitCurve(displayData);
             }
 
             chart.update('none');
-
-            // Actualizar tabla
             updateTable(displayData);
-            
-            // Actualizar controles
-            exportBtn.disabled = rawData.length === 0;
-            deleteSelectedBtn.disabled = selectedPoints.size === 0;
-            timeZeroBtn.disabled = selectedPoints.size !== 1;
-            selectedCount.textContent = selectedPoints.size;
+
+            exportBtn.disabled = state.rawData.length === 0;
+            setZeroBtn.disabled = state.selectedPoints.size !== 1;
         }
 
-        // Actualizar tabla
         function updateTable(displayData) {
             if (displayData.length === 0) {
-                dataTable.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999;">Sin datos</td></tr>';
+                dataTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">SIN DATOS</td></tr>';
                 return;
             }
 
-            dataTable.innerHTML = displayData.map((d, idx) => `
-                <tr class="${selectedPoints.has(d.id) ? 'selected-row' : ''}" onclick="toggleSelect('${d.id}')">
+            dataTableBody.innerHTML = displayData.map((d, idx) => `
+                <tr class="${state.selectedPoints.has(d.id) ? 'selected' : ''}" onclick="toggleSelect('${d.id}')">
                     <td>${idx + 1}</td>
-                    <td>${getAdjustedTime(d.time).toFixed(3)}</td>
+                    <td>${d.adjustedTime.toFixed(3)}</td>
                     <td>
                         <input type="number" value="${d.value}" 
                                onchange="editValue('${d.id}', this.value)"
                                onclick="event.stopPropagation()" step="0.01">
                     </td>
                     <td>
+                        <button class="toolbar-btn" 
+                                style="padding: 2px 6px; font-size: 0.8rem; border: 1px solid black;"
+                                onclick="showVideoForPoint('${d.id}'); event.stopPropagation()">
+                            ▶
+                        </button>
+                    </td>
+                    <td>
                         <button class="delete-btn" onclick="deletePoint('${d.id}'); event.stopPropagation()">
-                            ✕
+                            ×
                         </button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        // Seleccionar/deseleccionar punto
+        function showVideoForPoint(id) {
+            const point = state.rawData.find(d => d.id === id);
+            if (point) {
+                showVideoAtTime(point);
+            }
+        }
+
         function toggleSelect(id) {
-            if (selectedPoints.has(id)) {
-                selectedPoints.delete(id);
+            if (state.selectedPoints.has(id)) {
+                state.selectedPoints.delete(id);
             } else {
-                selectedPoints.add(id);
+                state.selectedPoints.clear(); // Solo un punto a la vez
+                state.selectedPoints.add(id);
             }
             updateDisplay();
         }
 
-        // Editar valor
         function editValue(id, newValue) {
-            const index = rawData.findIndex(d => d.id === id);
-            if (index !== -1) {
-                rawData[index].value = parseFloat(newValue) || rawData[index].value;
+            const point = state.rawData.find(d => d.id === id);
+            if (point) {
+                point.value = parseFloat(newValue) || point.value;
                 updateDisplay();
             }
         }
 
-        // Eliminar punto
         function deletePoint(id) {
-            rawData = rawData.filter(d => d.id !== id);
-            selectedPoints.delete(id);
+            state.rawData = state.rawData.filter(d => d.id !== id);
+            state.selectedPoints.delete(id);
             updateDisplay();
         }
 
-        // Eliminar seleccionados
-        deleteSelectedBtn.addEventListener('click', () => {
-            rawData = rawData.filter(d => !selectedPoints.has(d.id));
-            selectedPoints.clear();
-            updateDisplay();
-        });
+        // ========== CONTROLES ==========
 
-        // Limpiar todo
-        clearBtn.addEventListener('click', () => {
-            if (confirm('¿Estás seguro de que quieres eliminar todos los datos?')) {
-                rawData = [];
-                selectedPoints.clear();
-                timeZeroOffset = 0;
-                clearFit();
-                updateDisplay();
-            }
-        });
-
-        // Establecer tiempo cero
-        timeZeroBtn.addEventListener('click', () => {
-            if (selectedPoints.size === 1) {
-                const selectedId = Array.from(selectedPoints)[0];
-                const point = rawData.find(d => d.id === selectedId);
+        setZeroBtn.addEventListener('click', () => {
+            if (state.selectedPoints.size === 1) {
+                const selectedId = Array.from(state.selectedPoints)[0];
+                const point = state.rawData.find(d => d.id === selectedId);
                 if (point) {
-                    timeZeroOffset = point.time;
+                    state.timeZeroOffset = point.time;
                     updateDisplay();
-                    alert('Tiempo cero establecido en el punto seleccionado');
                 }
             }
         });
 
-        // Restablecer tiempo
-        resetTimeBtn.addEventListener('click', () => {
-            timeZeroOffset = 0;
-            updateDisplay();
-        });
-
-        // Exportar CSV
-        exportBtn.addEventListener('click', () => {
-            const csv = 'Tiempo,Valor\n' + rawData.map(d => 
-                `${getAdjustedTime(d.time)},${d.value}`
-            ).join('\n');
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'microbit_data.csv';
-            a.click();
-        });
-
-        // Actualizar intervalo y etiquetas
-        intervalInput.addEventListener('change', updateDisplay);
-        xAxisLabel.addEventListener('change', updateDisplay);
-        yAxisLabel.addEventListener('change', updateDisplay);
-        timeUnitInput.addEventListener('change', updateDisplay);
-
-        // Click en gráfica
-        function handleChartClick(evt) {
-            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
-            if (points.length > 0) {
-                const dataIndex = points[0].index;
-                const interval = parseInt(intervalInput.value) || 100;
-                const step = Math.max(1, Math.floor(interval / 10));
-                const displayData = rawData.filter((_, idx) => idx % step === 0);
-                if (displayData[dataIndex]) {
-                    toggleSelect(displayData[dataIndex].id);
-                }
-            }
-        }
-
-        // ========== AJUSTES DE CURVAS ==========
-
-        // Calcular ajuste
         calculateFitBtn.addEventListener('click', () => {
             const type = fitType.value;
-            if (type === 'none') {
-                alert('Selecciona un tipo de ajuste');
-                return;
-            }
-            if (rawData.length < 3) {
-                alert('Se necesitan al menos 3 puntos para calcular un ajuste');
+            if (type === 'none' || state.rawData.length < 3) {
+                alert('Selecciona tipo y asegúrate de tener 3+ puntos');
                 return;
             }
 
-            const interval = parseInt(intervalInput.value) || 100;
-            const step = Math.max(1, Math.floor(interval / 10));
-            const displayData = rawData.filter((_, idx) => idx % step === 0);
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const xData = state.rawData.map(d => (d.time - state.timeZeroOffset) / timeUnitValue);
+            const yData = state.rawData.map(d => d.value);
 
-            const xData = displayData.map(d => getAdjustedTime(d.time));
-            const yData = displayData.map(d => d.value);
-
-            fitData = calculateFit(type, xData, yData);
+            state.fitData = calculateFit(type, xData, yData);
             
-            if (fitData) {
-                displayFitResults(fitData);
-                addFitCurve(displayData);
+            if (state.fitData) {
+                displayFitResults();
+                addFitCurve();
             }
         });
 
-        // Calcular el ajuste según el tipo
         function calculateFit(type, x, y) {
             const n = x.length;
             
             if (type === 'linear') {
-                // y = mx + b
                 const sumX = x.reduce((a, b) => a + b, 0);
                 const sumY = y.reduce((a, b) => a + b, 0);
                 const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
@@ -756,115 +984,98 @@
                 const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
                 const b = (sumY - m * sumX) / n;
                 
+                const r2 = calculateR2(x, y, xi => m * xi + b);
+                
                 return {
                     type: 'linear',
                     params: { m, b },
-                    equation: `y = ${m.toFixed(4)}x + ${b.toFixed(4)}`,
-                    r2: calculateR2(x, y, xi => m * xi + b)
+                    equation: `y = ${m.toFixed(4)}x ${b >= 0 ? '+' : ''} ${b.toFixed(4)}`,
+                    r2: r2
                 };
-            }
-            
-            else if (type === 'quadratic') {
-                // y = ax² + bx + c
+            } else if (type === 'quadratic') {
                 const result = polynomialFit(x, y, 2);
                 const [c, b, a] = result;
+                const r2 = calculateR2(x, y, xi => a * xi * xi + b * xi + c);
                 return {
                     type: 'quadratic',
                     params: { a, b, c },
-                    equation: `y = ${a.toFixed(4)}x² + ${b.toFixed(4)}x + ${c.toFixed(4)}`,
-                    r2: calculateR2(x, y, xi => a * xi * xi + b * xi + c)
+                    equation: `y = ${a.toFixed(4)}x² ${b >= 0 ? '+' : ''} ${b.toFixed(4)}x ${c >= 0 ? '+' : ''} ${c.toFixed(4)}`,
+                    r2: r2
                 };
-            }
-            
-            else if (type === 'exponential') {
-                // y = a * e^(bx) -> ln(y) = ln(a) + bx
+            } else if (type === 'exponential') {
                 const yPositive = y.every(yi => yi > 0);
                 if (!yPositive) {
                     alert('Para ajuste exponencial, todos los valores Y deben ser positivos');
                     return null;
                 }
-                
                 const lnY = y.map(yi => Math.log(yi));
                 const sumX = x.reduce((a, b) => a + b, 0);
                 const sumLnY = lnY.reduce((a, b) => a + b, 0);
                 const sumXLnY = x.reduce((sum, xi, i) => sum + xi * lnY[i], 0);
                 const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
-                
                 const b = (n * sumXLnY - sumX * sumLnY) / (n * sumX2 - sumX * sumX);
                 const lnA = (sumLnY - b * sumX) / n;
                 const a = Math.exp(lnA);
-                
+                const r2 = calculateR2(x, y, xi => a * Math.exp(b * xi));
                 return {
                     type: 'exponential',
                     params: { a, b },
-                    equation: `y = ${a.toFixed(4)} · e^(${b.toFixed(4)}x)`,
-                    r2: calculateR2(x, y, xi => a * Math.exp(b * xi))
+                    equation: `y = ${a.toFixed(4)}·e^(${b.toFixed(4)}x)`,
+                    r2: r2
                 };
-            }
-            
-            else if (type === 'power') {
-                // y = a * x^b -> ln(y) = ln(a) + b*ln(x)
+            } else if (type === 'power') {
                 const xPositive = x.every(xi => xi > 0);
                 const yPositive = y.every(yi => yi > 0);
                 if (!xPositive || !yPositive) {
                     alert('Para ajuste potencial, todos los valores X e Y deben ser positivos');
                     return null;
                 }
-                
                 const lnX = x.map(xi => Math.log(xi));
                 const lnY = y.map(yi => Math.log(yi));
                 const sumLnX = lnX.reduce((a, b) => a + b, 0);
                 const sumLnY = lnY.reduce((a, b) => a + b, 0);
                 const sumLnXLnY = lnX.reduce((sum, lnXi, i) => sum + lnXi * lnY[i], 0);
                 const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
-                
                 const b = (n * sumLnXLnY - sumLnX * sumLnY) / (n * sumLnX2 - sumLnX * sumLnX);
                 const lnA = (sumLnY - b * sumLnX) / n;
                 const a = Math.exp(lnA);
-                
+                const r2 = calculateR2(x, y, xi => a * Math.pow(xi, b));
                 return {
                     type: 'power',
                     params: { a, b },
-                    equation: `y = ${a.toFixed(4)} · x^${b.toFixed(4)}`,
-                    r2: calculateR2(x, y, xi => a * Math.pow(xi, b))
+                    equation: `y = ${a.toFixed(4)}·x^${b.toFixed(4)}`,
+                    r2: r2
                 };
-            }
-            
-            else if (type === 'logarithmic') {
-                // y = a * ln(x) + b
+            } else if (type === 'logarithmic') {
                 const xPositive = x.every(xi => xi > 0);
                 if (!xPositive) {
                     alert('Para ajuste logarítmico, todos los valores X deben ser positivos');
                     return null;
                 }
-                
                 const lnX = x.map(xi => Math.log(xi));
                 const sumLnX = lnX.reduce((a, b) => a + b, 0);
                 const sumY = y.reduce((a, b) => a + b, 0);
                 const sumLnXY = lnX.reduce((sum, lnXi, i) => sum + lnXi * y[i], 0);
                 const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
-                
                 const a = (n * sumLnXY - sumLnX * sumY) / (n * sumLnX2 - sumLnX * sumLnX);
                 const b = (sumY - a * sumLnX) / n;
-                
+                const r2 = calculateR2(x, y, xi => a * Math.log(xi) + b);
                 return {
                     type: 'logarithmic',
                     params: { a, b },
-                    equation: `y = ${a.toFixed(4)} · ln(x) + ${b.toFixed(4)}`,
-                    r2: calculateR2(x, y, xi => a * Math.log(xi) + b)
+                    equation: `y = ${a.toFixed(4)}·ln(x) ${b >= 0 ? '+' : ''} ${b.toFixed(4)}`,
+                    r2: r2
                 };
             }
             
             return null;
         }
 
-        // Ajuste polinomial usando mínimos cuadrados
         function polynomialFit(x, y, degree) {
             const n = x.length;
             const matrix = [];
             const result = [];
             
-            // Construir matriz de Vandermonde
             for (let i = 0; i <= degree; i++) {
                 const row = [];
                 for (let j = 0; j <= degree; j++) {
@@ -883,18 +1094,14 @@
                 result.push(sum);
             }
             
-            // Resolver sistema de ecuaciones (Gauss)
             return gaussElimination(matrix, result);
         }
 
-        // Eliminación gaussiana
         function gaussElimination(matrix, result) {
             const n = matrix.length;
             const augmented = matrix.map((row, i) => [...row, result[i]]);
             
-            // Forward elimination
             for (let i = 0; i < n; i++) {
-                // Pivote
                 let maxRow = i;
                 for (let k = i + 1; k < n; k++) {
                     if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
@@ -903,7 +1110,6 @@
                 }
                 [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
                 
-                // Hacer ceros debajo del pivote
                 for (let k = i + 1; k < n; k++) {
                     const factor = augmented[k][i] / augmented[i][i];
                     for (let j = i; j <= n; j++) {
@@ -912,7 +1118,6 @@
                 }
             }
             
-            // Back substitution
             const solution = new Array(n);
             for (let i = n - 1; i >= 0; i--) {
                 solution[i] = augmented[i][n];
@@ -925,7 +1130,6 @@
             return solution;
         }
 
-        // Calcular R² (coeficiente de determinación)
         function calculateR2(x, y, fitFunction) {
             const yMean = y.reduce((a, b) => a + b, 0) / y.length;
             let ssRes = 0;
@@ -940,62 +1144,61 @@
             return 1 - (ssRes / ssTot);
         }
 
-        // Mostrar resultados del ajuste
-        function displayFitResults(fit) {
-            fitResults.style.display = 'block';
-            fitEquation.innerHTML = `<p><strong>Ecuación:</strong> ${fit.equation}</p>`;
-            fitStats.innerHTML = `
-                <p><strong>R²:</strong> ${fit.r2.toFixed(6)} ${fit.r2 > 0.95 ? '(Excelente ajuste)' : fit.r2 > 0.85 ? '(Buen ajuste)' : '(Ajuste regular)'}</p>
-                <p style="margin-top: 10px;"><strong>Parámetros:</strong></p>
-                <pre>${JSON.stringify(fit.params, null, 2)}</pre>
+        function displayFitResults() {
+            const quality = state.fitData.r2 > 0.95 ? 'EXCELENTE' : state.fitData.r2 > 0.85 ? 'BUENO' : 'REGULAR';
+            
+            fitResults.innerHTML = `
+                <div class="fit-box">
+                    <div class="title">ECUACIÓN</div>
+                    <div class="equation">${state.fitData.equation}</div>
+                    <div class="stats">
+                        R² = ${state.fitData.r2.toFixed(6)}<br>
+                        ${quality}
+                    </div>
+                </div>
             `;
         }
 
-        // Añadir curva de ajuste a la gráfica
-        function addFitCurve(displayData) {
-            // Eliminar dataset anterior si existe
+        function addFitCurve() {
             if (chart.data.datasets.length > 1) {
                 chart.data.datasets.pop();
             }
             
-            // Generar puntos para la curva suave
-            const xData = displayData.map(d => getAdjustedTime(d.time));
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const xData = state.rawData.map(d => (d.time - state.timeZeroOffset) / timeUnitValue);
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
             const numPoints = 100;
             const step = (xMax - xMin) / numPoints;
             
             const fitPoints = [];
-            const fitLabels = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
-                const y = evaluateFit(fitData, x);
+                const y = evaluateFit(state.fitData, x);
                 if (!isNaN(y) && isFinite(y)) {
                     fitPoints.push(y);
-                    fitLabels.push(x.toFixed(3));
                 }
             }
             
-            // Añadir dataset de ajuste
             chart.data.datasets.push({
-                label: 'Ajuste teórico',
+                label: 'Ajuste',
                 data: fitPoints,
-                borderColor: '#2196F3',
+                borderColor: '#666',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
+                borderDash: [5, 5],
                 pointRadius: 0,
-                tension: 0.4
+                tension: 0
             });
             
             chart.update();
         }
 
-        // Actualizar curva de ajuste
         function updateFitCurve(displayData) {
-            if (!fitData || chart.data.datasets.length < 2) return;
+            if (!state.fitData || chart.data.datasets.length < 2) return;
             
-            const xData = displayData.map(d => getAdjustedTime(d.time));
+            const xData = displayData.map(d => d.adjustedTime);
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
             const numPoints = 100;
@@ -1005,7 +1208,7 @@
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
-                const y = evaluateFit(fitData, x);
+                const y = evaluateFit(state.fitData, x);
                 if (!isNaN(y) && isFinite(y)) {
                     fitPoints.push(y);
                 }
@@ -1014,8 +1217,9 @@
             chart.data.datasets[1].data = fitPoints;
         }
 
-        // Evaluar función de ajuste en un punto
         function evaluateFit(fit, x) {
+            if (!fit) return 0;
+            
             switch (fit.type) {
                 case 'linear':
                     return fit.params.m * x + fit.params.b;
@@ -1032,22 +1236,169 @@
             }
         }
 
-        // Limpiar ajuste
         clearFitBtn.addEventListener('click', () => {
-            clearFit();
-        });
-
-        function clearFit() {
-            fitData = null;
-            fitResults.style.display = 'none';
+            state.fitData = null;
+            fitResults.innerHTML = '';
             fitType.value = 'none';
             
-            // Eliminar dataset de ajuste
             if (chart.data.datasets.length > 1) {
                 chart.data.datasets.pop();
                 chart.update();
             }
+        });
+
+        // ========== HERRAMIENTAS ==========
+
+        examineBtn.addEventListener('click', () => {
+            state.examineMode = !state.examineMode;
+            if (state.examineMode) {
+                examineBtn.classList.add('primary');
+            } else {
+                examineBtn.classList.remove('primary');
+                document.getElementById('examineLine').style.display = 'none';
+                document.getElementById('examineLabel').style.display = 'none';
+            }
+        });
+
+        statsBtn.addEventListener('click', () => {
+            if (state.rawData.length === 0) {
+                alert('No hay datos');
+                return;
+            }
+            
+            const values = state.rawData.map(d => d.value);
+            const mean = values.reduce((a, b) => a + b, 0) / values.length;
+            const min = Math.min(...values);
+            const max = Math.max(...values);
+            const stdDev = Math.sqrt(values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length);
+            
+            document.getElementById('statsBody').innerHTML = `
+                MEDIA: ${mean.toFixed(4)}<br>
+                MÍNIMO: ${min.toFixed(4)}<br>
+                MÁXIMO: ${max.toFixed(4)}<br>
+                DESV. EST: ${stdDev.toFixed(4)}<br>
+                PUNTOS: ${values.length}
+            `;
+            document.getElementById('statsModal').classList.add('active');
+        });
+
+        function closeStatsModal() {
+            document.getElementById('statsModal').classList.remove('active');
         }
+
+        function closeVideoModal() {
+            document.getElementById('videoModal').classList.remove('active');
+            playbackVideo.pause();
+            playbackVideo.src = '';
+        }
+
+        exportBtn.addEventListener('click', () => {
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const csv = `${xAxisLabel.value},${yAxisLabel.value}\n` + 
+                state.rawData.map(d => {
+                    const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
+                    return `${adjustedTime},${d.value}`;
+                }).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'microbit_data.csv';
+            a.click();
+        });
+
+        clearBtn.addEventListener('click', () => {
+            if (confirm('¿Eliminar todos los datos y video?')) {
+                state.rawData = [];
+                state.selectedPoints.clear();
+                state.timeZeroOffset = 0;
+                state.fitData = null;
+                state.videoBlob = null;
+                state.recordedChunks = [];
+                fitResults.innerHTML = '';
+                if (chart.data.datasets.length > 1) {
+                    chart.data.datasets.pop();
+                }
+                updateDisplay();
+            }
+        });
+
+        function handleChartClick(evt) {
+            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: true }, true);
+            if (points.length > 0) {
+                const dataIndex = points[0].index;
+                if (state.rawData[dataIndex]) {
+                    toggleSelect(state.rawData[dataIndex].id);
+                }
+            }
+        }
+
+        function handleChartHover(evt) {
+            if (!state.examineMode) return;
+            
+            const rect = chart.canvas.getBoundingClientRect();
+            const x = evt.native.clientX - rect.left;
+            const y = evt.native.clientY - rect.top;
+            
+            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
+            
+            if (points.length > 0) {
+                const point = points[0];
+                const dataIndex = point.index;
+                const xValue = chart.data.labels[dataIndex];
+                const yValue = chart.data.datasets[0].data[dataIndex];
+                
+                const examineLine = document.getElementById('examineLine');
+                const examineLabel = document.getElementById('examineLabel');
+                
+                examineLine.style.display = 'block';
+                examineLine.style.left = x + 'px';
+                examineLine.style.top = '0';
+                examineLine.style.height = rect.height + 'px';
+                
+                examineLabel.style.display = 'block';
+                examineLabel.style.left = (x + 10) + 'px';
+                examineLabel.style.top = (y - 40) + 'px';
+                examineLabel.innerHTML = `X: ${xValue}<br>Y: ${yValue.toFixed(4)}`;
+            }
+        }
+
+        xAxisLabel.addEventListener('input', updateDisplay);
+        yAxisLabel.addEventListener('input', updateDisplay);
+        timeUnit.addEventListener('change', updateDisplay);
+
+        function toggleSection(header) {
+            const content = header.nextElementSibling;
+            const arrow = header.querySelector('span');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                arrow.textContent = '▼';
+            } else {
+                content.classList.add('collapsed');
+                arrow.textContent = '▶';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeStatsModal();
+                closeVideoModal();
+            }
+        });
+
+        document.getElementById('statsModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closeStatsModal();
+            }
+        });
+
+        document.getElementById('videoModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closeVideoModal();
+            }
+        });
     </script>
 </body>
 </html>
