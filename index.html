@@ -284,6 +284,15 @@
             font-family: 'Courier New', monospace;
         }
         
+        /* Selección de área */
+        .selection-box {
+            position: absolute;
+            border: 2px solid black;
+            background: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            display: none;
+        }
+        
         /* Stats modal */
         .modal {
             display: none;
@@ -515,7 +524,6 @@
         <div class="toolbar-separator"></div>
         
         <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR CSV</button>
-        <button id="exportVideoBtn" class="toolbar-btn" disabled>EXPORTAR VIDEO</button>
         <button id="clearBtn" class="toolbar-btn">LIMPIAR</button>
         
         <div class="toolbar-separator"></div>
@@ -540,6 +548,7 @@
                 <canvas id="myChart"></canvas>
                 <div class="examine-line" id="examineLine"></div>
                 <div class="examine-label" id="examineLabel"></div>
+                <div class="selection-box" id="selectionBox"></div>
             </div>
         </div>
 
@@ -604,6 +613,7 @@
                             <option value="exponential">Exponencial</option>
                             <option value="power">Potencial</option>
                             <option value="logarithmic">Logarítmico</option>
+                            <option value="sinusoidal">Sinusoidal</option>
                         </select>
                     </div>
                     <button class="toolbar-btn primary btn-full" id="calculateFitBtn">
@@ -900,7 +910,11 @@ while True:
             mediaRecorder: null,
             recordedChunks: [],
             videoBlob: null,
-            recordingStartTime: null
+            recordingStartTime: null,
+            // Selección de área
+            isSelecting: false,
+            selectionStart: null,
+            selectionEnd: null
         };
 
         // DOM
@@ -911,7 +925,6 @@ while True:
         const examineBtn = document.getElementById('examineBtn');
         const statsBtn = document.getElementById('statsBtn');
         const exportBtn = document.getElementById('exportBtn');
-        const exportVideoBtn = document.getElementById('exportVideoBtn');
         const clearBtn = document.getElementById('clearBtn');
         const statusText = document.getElementById('statusText');
         const xAxisLabel = document.getElementById('xAxisLabel');
@@ -931,6 +944,7 @@ while True:
         const playbackVideo = document.getElementById('playbackVideo');
         const videoInfo = document.getElementById('videoInfo');
         const helpBtn = document.getElementById('helpBtn');
+        const selectionBox = document.getElementById('selectionBox');
 
         if (!('serial' in navigator)) {
             alert('Web Serial API no soportada. Usa Chrome, Edge u Opera.');
@@ -1276,8 +1290,7 @@ while True:
             if (state.selectedPoints.has(id)) {
                 state.selectedPoints.delete(id);
             } else {
-                state.selectedPoints.clear(); // Solo un punto a la vez
-                state.selectedPoints.add(id);
+                state.selectedPoints.add(id); // Permitir múltiples selecciones
             }
             updateDisplay();
         }
@@ -1422,9 +1435,83 @@ while True:
                     equation: `y = ${a.toFixed(4)}·ln(x) ${b >= 0 ? '+' : ''} ${b.toFixed(4)}`,
                     r2: r2
                 };
+            } else if (type === 'sinusoidal') {
+                // y = A·sin(B·x + C) + D
+                // Estimación inicial de parámetros
+                const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+                const yMin = Math.min(...y);
+                const yMax = Math.max(...y);
+                const amplitude = (yMax - yMin) / 2;
+                const offset = yMean;
+                
+                // Estimar frecuencia usando autocorrelación simple
+                let period = estimatePeriod(x, y);
+                const frequency = (2 * Math.PI) / period;
+                
+                // Estimar fase inicial
+                const phase = estimatePhase(x, y, amplitude, frequency, offset);
+                
+                const A = amplitude;
+                const B = frequency;
+                const C = phase;
+                const D = offset;
+                
+                const r2 = calculateR2(x, y, xi => A * Math.sin(B * xi + C) + D);
+                
+                return {
+                    type: 'sinusoidal',
+                    params: { A, B, C, D },
+                    equation: `y = ${A.toFixed(4)}·sin(${B.toFixed(4)}·x ${C >= 0 ? '+' : ''} ${C.toFixed(4)}) ${D >= 0 ? '+' : ''} ${D.toFixed(4)}`,
+                    r2: r2
+                };
             }
             
             return null;
+        }
+
+        function estimatePeriod(x, y) {
+            // Estimación simple del período usando cruces por cero
+            const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+            const centered = y.map(yi => yi - yMean);
+            
+            let crossings = [];
+            for (let i = 1; i < centered.length; i++) {
+                if (centered[i-1] * centered[i] < 0) {
+                    crossings.push(x[i]);
+                }
+            }
+            
+            if (crossings.length < 2) {
+                // Si no hay suficientes cruces, usar rango completo
+                return (x[x.length - 1] - x[0]) / 2;
+            }
+            
+            // Promedio de distancias entre cruces (medio período)
+            let distances = [];
+            for (let i = 1; i < crossings.length; i++) {
+                distances.push(crossings[i] - crossings[i-1]);
+            }
+            
+            const avgHalfPeriod = distances.reduce((a, b) => a + b, 0) / distances.length;
+            return avgHalfPeriod * 2;
+        }
+
+        function estimatePhase(x, y, A, B, D) {
+            // Estimar fase usando el primer punto
+            if (x.length === 0) return 0;
+            
+            const y0 = y[0];
+            const x0 = x[0];
+            
+            // y0 = A·sin(B·x0 + C) + D
+            // sin(B·x0 + C) = (y0 - D) / A
+            
+            if (Math.abs(A) < 0.0001) return 0;
+            
+            const sinValue = (y0 - D) / A;
+            const clampedSin = Math.max(-1, Math.min(1, sinValue));
+            
+            return Math.asin(clampedSin) - B * x0;
         }
 
         function polynomialFit(x, y, degree) {
@@ -1519,6 +1606,9 @@ while True:
                     break;
                 case 'logarithmic':
                     explanation = 'a = escala, b = desplazamiento';
+                    break;
+                case 'sinusoidal':
+                    explanation = `A = amplitud, B = frecuencia (período ≈ ${(2*Math.PI/state.fitData.params.B).toFixed(2)}), C = fase, D = offset`;
                     break;
             }
             
@@ -1748,27 +1838,6 @@ while True:
             
             a.click();
             URL.revokeObjectURL(url);
-        });
-
-        // Exportar video
-        exportVideoBtn.addEventListener('click', () => {
-            if (!state.videoBlob) {
-                alert('No hay video grabado para exportar');
-                return;
-            }
-            
-            const url = URL.createObjectURL(state.videoBlob);
-            const a = document.createElement('a');
-            a.href = url;
-            
-            // Nombre de archivo con timestamp
-            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
-            a.download = `microbit_video_${timestamp}.webm`;
-            
-            a.click();
-            
-            // Limpiar URL después de un tiempo
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
         });
 
         clearBtn.addEventListener('click', () => {
