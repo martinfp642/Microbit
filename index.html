@@ -790,32 +790,43 @@
             stopBtn.style.display = 'inline-block';
             statusText.textContent = 'CAPTURANDO';
             
-            // Iniciar grabación de video si la cámara está activa
+            // Iniciar grabación de video si la cámara está activa (NO bloquea)
             if (state.cameraActive) {
                 startVideoRecording();
             }
             
+            // Iniciar lectura de datos (proceso paralelo)
             startReading();
         });
 
-        stopBtn.addEventListener('click', () => {
+        stopBtn.addEventListener('click', async () => {
             state.isCollecting = false;
-            collectBtn.style.display = 'inline-block';
-            stopBtn.style.display = 'none';
-            statusText.textContent = 'PAUSADO';
             
             // Detener grabación de video
             stopVideoRecording();
+            
+            // Cancelar lectura del puerto serial
+            if (state.reader) {
+                try {
+                    await state.reader.cancel();
+                } catch (err) {
+                    console.error('Error al cancelar reader:', err);
+                }
+            }
+            
+            collectBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            statusText.textContent = 'PAUSADO';
         });
 
         async function startReading() {
-            const textDecoder = new TextDecoderStream();
-            const readableStreamClosed = state.port.readable.pipeTo(textDecoder.writable);
-            state.reader = textDecoder.readable.getReader();
-
-            let buffer = '';
-
             try {
+                const textDecoder = new TextDecoderStream();
+                const readableStreamClosed = state.port.readable.pipeTo(textDecoder.writable);
+                state.reader = textDecoder.readable.getReader();
+
+                let buffer = '';
+
                 while (state.isCollecting) {
                     const { value, done } = await state.reader.read();
                     if (done) break;
@@ -835,47 +846,72 @@
                                     value: numValue,
                                     id: `${timestamp}-${Math.random()}`
                                 });
-                                updateDisplay();
+                                // Actualizar display de forma eficiente (sin bloquear)
+                                requestAnimationFrame(() => updateDisplay());
                             }
                         }
                     }
                 }
             } catch (err) {
-                console.error(err);
+                if (err.name !== 'NetworkError') {
+                    console.error('Error en lectura:', err);
+                }
+            } finally {
+                if (state.reader) {
+                    try {
+                        state.reader.releaseLock();
+                    } catch (err) {
+                        // Ignorar errores al liberar
+                    }
+                }
             }
         }
 
-        // ========== VISUALIZACIÓN ==========
+        // ========== VISUALIZACIÓN (optimizada para no bloquear) ==========
+
+        let updateScheduled = false;
 
         function updateDisplay() {
-            const timeUnitValue = parseFloat(timeUnit.value);
-            const displayData = state.rawData.map(d => ({
-                ...d,
-                adjustedTime: (d.time - state.timeZeroOffset) / timeUnitValue
-            }));
+            // Evitar actualizaciones múltiples simultáneas
+            if (updateScheduled) return;
+            updateScheduled = true;
+            
+            requestAnimationFrame(() => {
+                const timeUnitValue = parseFloat(timeUnit.value);
+                const displayData = state.rawData.map(d => ({
+                    ...d,
+                    adjustedTime: (d.time - state.timeZeroOffset) / timeUnitValue
+                }));
 
-            graphTitle.textContent = `${yAxisLabel.value.toUpperCase()} vs ${xAxisLabel.value.toUpperCase()}`;
-            chart.options.scales.x.title.text = xAxisLabel.value.toUpperCase();
-            chart.options.scales.y.title.text = yAxisLabel.value.toUpperCase();
+                graphTitle.textContent = `${yAxisLabel.value.toUpperCase()} vs ${xAxisLabel.value.toUpperCase()}`;
+                chart.options.scales.x.title.text = xAxisLabel.value.toUpperCase();
+                chart.options.scales.y.title.text = yAxisLabel.value.toUpperCase();
 
-            chart.data.labels = displayData.map(d => d.adjustedTime.toFixed(3));
-            chart.data.datasets[0].data = displayData.map(d => d.value);
-            chart.data.datasets[0].pointBackgroundColor = displayData.map(d =>
-                state.selectedPoints.has(d.id) ? '#666' : '#000'
-            );
-            chart.data.datasets[0].pointRadius = displayData.map(d =>
-                state.selectedPoints.has(d.id) ? 6 : 3
-            );
+                chart.data.labels = displayData.map(d => d.adjustedTime.toFixed(3));
+                chart.data.datasets[0].data = displayData.map(d => d.value);
+                chart.data.datasets[0].pointBackgroundColor = displayData.map(d =>
+                    state.selectedPoints.has(d.id) ? '#666' : '#000'
+                );
+                chart.data.datasets[0].pointRadius = displayData.map(d =>
+                    state.selectedPoints.has(d.id) ? 6 : 3
+                );
 
-            if (state.fitData && chart.data.datasets.length > 1) {
-                updateFitCurve(displayData);
-            }
+                if (state.fitData && chart.data.datasets.length > 1) {
+                    updateFitCurve(displayData);
+                }
 
-            chart.update('none');
-            updateTable(displayData);
+                chart.update('none');
+                
+                // Actualizar tabla solo si no estamos capturando (para no sobrecargar)
+                if (!state.isCollecting || state.rawData.length % 10 === 0) {
+                    updateTable(displayData);
+                }
 
-            exportBtn.disabled = state.rawData.length === 0;
-            setZeroBtn.disabled = state.selectedPoints.size !== 1;
+                exportBtn.disabled = state.rawData.length === 0;
+                setZeroBtn.disabled = state.selectedPoints.size !== 1;
+                
+                updateScheduled = false;
+            });
         }
 
         function updateTable(displayData) {
