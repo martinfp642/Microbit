@@ -972,7 +972,12 @@ while True:
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                onClick: handleChartClick,
+                onClick: (evt) => {
+                    // Solo procesar clicks si no estamos seleccionando área
+                    if (!state.isSelecting) {
+                        handleChartClick(evt);
+                    }
+                },
                 onHover: handleChartHover,
                 plugins: {
                     legend: { display: false },
@@ -1640,7 +1645,9 @@ while True:
             
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
-            const numPoints = 200; // Más puntos para curvas suaves
+            
+            // Para sinusoidal, usar muchos más puntos para capturar la oscilación
+            const numPoints = state.fitData.type === 'sinusoidal' ? 500 : 200;
             const step = (xMax - xMin) / numPoints;
             
             const fitPoints = [];
@@ -1652,10 +1659,15 @@ while True:
                 
                 // Solo agregar puntos válidos
                 if (!isNaN(y) && isFinite(y)) {
-                    fitPoints.push({ x: x, y: y });
+                    fitPoints.push(y);
                     fitLabels.push(x.toFixed(3));
                 } else {
-                    // Si encontramos un punto inválido, detener
+                    // Para funciones continuas, podemos seguir
+                    if (state.fitData.type === 'sinusoidal' || 
+                        state.fitData.type === 'linear' || 
+                        state.fitData.type === 'quadratic') {
+                        continue;
+                    }
                     break;
                 }
             }
@@ -1666,15 +1678,18 @@ while True:
                 return;
             }
             
+            // Para sinusoidal, usar más tensión para curva suave
+            const tension = state.fitData.type === 'sinusoidal' ? 0.4 : 0.4;
+            
             chart.data.datasets.push({
                 label: 'Ajuste teórico',
-                data: fitPoints.map(p => p.y),
+                data: fitPoints,
                 borderColor: '#666',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
                 borderDash: [5, 5],
                 pointRadius: 0,
-                tension: 0.4, // Curva suave
+                tension: tension,
                 spanGaps: false
             });
             
@@ -1690,7 +1705,8 @@ while True:
             
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
-            const numPoints = 200;
+            
+            const numPoints = state.fitData.type === 'sinusoidal' ? 500 : 200;
             const step = (xMax - xMin) / numPoints;
             
             const fitPoints = [];
@@ -1702,6 +1718,11 @@ while True:
                 if (!isNaN(y) && isFinite(y)) {
                     fitPoints.push(y);
                 } else {
+                    if (state.fitData.type === 'sinusoidal' || 
+                        state.fitData.type === 'linear' || 
+                        state.fitData.type === 'quadratic') {
+                        continue;
+                    }
                     break;
                 }
             }
