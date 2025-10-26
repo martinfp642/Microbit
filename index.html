@@ -514,8 +514,15 @@
         
         <div class="toolbar-separator"></div>
         
-        <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR</button>
+        <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR CSV</button>
+        <button id="exportVideoBtn" class="toolbar-btn" disabled>EXPORTAR VIDEO</button>
         <button id="clearBtn" class="toolbar-btn">LIMPIAR</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <a href="https://makecode.microbit.org/" target="_blank" class="toolbar-btn" style="text-decoration: none; display: inline-flex; align-items: center;">
+            MAKECODE ↗
+        </a>
         
         <div class="toolbar-separator"></div>
         
@@ -904,6 +911,7 @@ while True:
         const examineBtn = document.getElementById('examineBtn');
         const statsBtn = document.getElementById('statsBtn');
         const exportBtn = document.getElementById('exportBtn');
+        const exportVideoBtn = document.getElementById('exportVideoBtn');
         const clearBtn = document.getElementById('clearBtn');
         const statusText = document.getElementById('statusText');
         const xAxisLabel = document.getElementById('xAxisLabel');
