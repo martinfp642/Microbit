@@ -57,16 +57,6 @@
             background: #333;
         }
         
-        .toolbar-btn.danger {
-            background: #d32f2f;
-            color: white;
-            border-color: #d32f2f;
-        }
-        
-        .toolbar-btn.danger:hover:not(:disabled) {
-            background: #b71c1c;
-        }
-        
         .toolbar-separator {
             width: 2px;
             height: 24px;
@@ -266,261 +256,446 @@
             margin-bottom: 8px;
         }
         
-        .fit-box .value {
-            font-size: 0.85rem;
-            line-height: 1.4;
+        .fit-box .equation {
+            font-size: 1.1rem;
+            margin: 8px 0;
+            font-weight: 600;
         }
         
-        /* Modal minimalista */
+        .fit-box .stats {
+            font-size: 0.85rem;
+            margin-top: 8px;
+            line-height: 1.6;
+        }
+        
+        /* Herramienta examine */
+        .examine-line {
+            position: absolute;
+            width: 2px;
+            background: black;
+            pointer-events: none;
+            display: none;
+        }
+        
+        .examine-label {
+            position: absolute;
+            background: white;
+            border: 2px solid black;
+            padding: 6px 10px;
+            font-size: 0.8rem;
+            pointer-events: none;
+            display: none;
+            font-family: 'Courier New', monospace;
+        }
+        
+        /* Selección de área */
+        .selection-box {
+            position: absolute;
+            border: 2px solid black;
+            background: rgba(0, 0, 0, 0.1);
+            pointer-events: none;
+            display: none;
+        }
+        
+        .range-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .range-selector input {
+            width: 80px;
+        }
+        
+        /* Stats modal */
         .modal {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 1000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
             background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
+            align-items: center;
+            justify-content: center;
         }
         
         .modal.active {
             display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .modal-content {
             background: white;
             border: 3px solid black;
             padding: 24px;
-            max-width: 500px;
+            max-width: 400px;
             width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
         }
         
-        .modal-title {
+        .modal-header {
             font-weight: 700;
             font-size: 1.2rem;
+            margin-bottom: 16px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 16px;
         }
         
         .modal-body {
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-        
-        .modal-btn {
-            background: black;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        
-        .modal-btn:hover {
-            background: #333;
-        }
-        
-        /* Elementos de examinación */
-        #examineLine {
-            position: absolute;
-            width: 2px;
-            background: rgba(0, 0, 0, 0.5);
-            pointer-events: none;
-            display: none;
-            z-index: 10;
-        }
-        
-        #examineLabel {
-            position: absolute;
-            background: black;
-            color: white;
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            pointer-events: none;
-            display: none;
-            z-index: 11;
-            white-space: nowrap;
             font-family: 'Courier New', monospace;
+            line-height: 2;
         }
         
-        .video-container {
+        .modal-close {
+            margin-top: 16px;
             width: 100%;
-            max-width: 100%;
         }
         
-        .video-container video {
-            width: 100%;
-            height: auto;
-            border: 2px solid black;
+        /* Help/Tutorial modal */
+        .help-modal {
+            max-width: 800px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .help-section {
-            margin-bottom: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .help-section:last-child {
+            border-bottom: none;
         }
         
         .help-section h3 {
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            font-size: 0.9rem;
         }
         
-        .help-section p, .help-section ul {
-            font-size: 0.85rem;
-            line-height: 1.5;
+        .help-section p {
+            margin-bottom: 8px;
+            line-height: 1.6;
         }
         
         .help-section ul {
             margin-left: 20px;
+            margin-bottom: 12px;
         }
         
-        /* Rango de depuración */
-        .range-inputs {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+        .help-section li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border: 2px solid black;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: black;
+            color: white;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .feature-icon {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            min-width: 24px;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        
+        /* Video modal */
+        .video-modal {
+            max-width: 900px;
+            width: 95%;
+        }
+        
+        .video-container {
+            background: black;
+            border: 2px solid black;
+            margin-top: 16px;
+            position: relative;
+        }
+        
+        .video-container video {
+            width: 100%;
+            display: block;
+        }
+        
+        .video-info {
+            padding: 12px;
+            background: white;
+            border-top: 2px solid black;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .video-controls {
+            display: flex;
             gap: 8px;
+            margin-top: 12px;
         }
         
-        .range-info {
-            font-size: 0.75rem;
-            color: #666;
-            margin-top: 8px;
-            font-style: italic;
+        /* Camera preview */
+        .camera-preview {
+            background: black;
+            border: 2px solid black;
+            margin-top: 12px;
+            position: relative;
+        }
+        
+        .camera-preview video {
+            width: 100%;
+            display: block;
+        }
+        
+        .recording-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: black;
+            color: white;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: none;
+        }
+        
+        .recording-indicator.active {
+            display: block;
+            animation: blink 1s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            .graph-panel {
+                border-right: none;
+                border-bottom: 2px solid black;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Toolbar superior -->
+    <!-- Toolbar -->
     <div class="toolbar">
-        <button class="toolbar-btn primary" id="connectBtn">CONECTAR</button>
-        <button class="toolbar-btn" id="recordBtn" disabled>● GRABAR</button>
-        <button class="toolbar-btn" id="stopRecordBtn" disabled>■ DETENER</button>
-        <button class="toolbar-btn" id="playVideoBtn" disabled>▶ VER VIDEO</button>
+        <button id="connectBtn" class="toolbar-btn primary">CONECTAR</button>
+        <button id="collectBtn" class="toolbar-btn primary" style="display:none;">CAPTURAR</button>
+        <button id="stopBtn" class="toolbar-btn" style="display:none;">DETENER</button>
+        
         <div class="toolbar-separator"></div>
-        <button class="toolbar-btn" id="examineBtn">EXAMINAR</button>
-        <button class="toolbar-btn" id="statsBtn">ESTADÍSTICAS</button>
-        <button class="toolbar-btn" id="exportBtn">EXPORTAR CSV</button>
-        <button class="toolbar-btn" id="helpBtn">AYUDA</button>
+        
+        <button id="cameraBtn" class="toolbar-btn">CÁMARA</button>
+        <button id="examineBtn" class="toolbar-btn">EXAMINE</button>
+        <button id="statsBtn" class="toolbar-btn">ESTADÍSTICAS</button>
+        
         <div class="toolbar-separator"></div>
-        <button class="toolbar-btn danger" id="deleteSelectedBtn" disabled>ELIMINAR SELECCIÓN</button>
-        <button class="toolbar-btn" id="clearBtn">LIMPIAR TODO</button>
-        <div class="status-text" id="statusText">DESCONECTADO</div>
+        
+        <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR CSV</button>
+        <button id="clearBtn" class="toolbar-btn">LIMPIAR</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <a href="https://makecode.microbit.org/" target="_blank" class="toolbar-btn" style="text-decoration: none; display: inline-flex; align-items: center;">
+            MAKECODE ↗
+        </a>
+        
+        <div class="toolbar-separator"></div>
+        
+        <button id="helpBtn" class="toolbar-btn">?</button>
+        
+        <span class="status-text" id="statusText">DESCONECTADO</span>
     </div>
 
+    <!-- Main -->
     <div class="main-container">
-        <!-- Panel de gráfica -->
+        <!-- Gráfica -->
         <div class="graph-panel">
-            <div class="graph-title">GRÁFICA DE DATOS</div>
+            <div class="graph-title" id="graphTitle">VALOR vs TIEMPO</div>
             <div class="chart-container">
-                <canvas id="dataChart"></canvas>
-                <div id="examineLine"></div>
-                <div id="examineLabel"></div>
+                <canvas id="myChart"></canvas>
+                <div class="examine-line" id="examineLine"></div>
+                <div class="examine-label" id="examineLabel"></div>
+                <div class="selection-box" id="selectionBox"></div>
             </div>
         </div>
 
         <!-- Panel lateral -->
         <div class="side-panel">
-            <!-- Sección de datos -->
+            <!-- Video -->
+            <div class="panel-section" id="videoSection" style="display:none;">
+                <div class="section-header" onclick="toggleSection(this)">
+                    VIDEO <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="camera-preview">
+                        <video id="cameraPreview" autoplay muted></video>
+                        <div class="recording-indicator" id="recordingIndicator">● REC</div>
+                    </div>
+                    <button class="toolbar-btn btn-full" id="stopCameraBtn">
+                        DETENER CÁMARA
+                    </button>
+                </div>
+            </div>
+
+            <!-- Configuración -->
             <div class="panel-section">
                 <div class="section-header" onclick="toggleSection(this)">
-                    <span>DATOS</span>
-                    <span>▼</span>
+                    CONFIGURACIÓN <span>▼</span>
                 </div>
-                <div class="section-content" style="max-height: 300px; overflow-y: auto;">
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Eje X</label>
+                        <input type="text" id="xAxisLabel" value="Tiempo (s)">
+                    </div>
+                    <div class="input-row">
+                        <label>Eje Y</label>
+                        <input type="text" id="yAxisLabel" value="Valor">
+                    </div>
+                    <div class="input-row">
+                        <label>Unidad tiempo</label>
+                        <select id="timeUnit">
+                            <option value="1">Milisegundos</option>
+                            <option value="1000" selected>Segundos</option>
+                            <option value="60000">Minutos</option>
+                        </select>
+                    </div>
+                    <button class="toolbar-btn btn-full" id="setZeroBtn" disabled>
+                        ESTABLECER T=0
+                    </button>
+                </div>
+            </div>
+
+            <!-- Depuración de datos -->
+            <div class="panel-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    DEPURACIÓN DE DATOS <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Desde punto #</label>
+                        <input type="number" id="rangeStart" min="1" value="1">
+                    </div>
+                    <div class="input-row">
+                        <label>Hasta punto #</label>
+                        <input type="number" id="rangeEnd" min="1" value="1">
+                    </div>
+                    <button class="toolbar-btn primary btn-full" id="selectRangeBtn">
+                        SELECCIONAR RANGO
+                    </button>
+                    <button class="toolbar-btn btn-full" id="deleteRangeBtn" style="background: #d32f2f; color: white; border-color: #d32f2f;">
+                        ELIMINAR RANGO
+                    </button>
+                    <button class="toolbar-btn btn-full" id="clearSelectionBtn">
+                        LIMPIAR SELECCIÓN
+                    </button>
+                    <button class="toolbar-btn btn-full" id="deleteSelectedGraphBtn" style="background: #d32f2f; color: white; border-color: #d32f2f; margin-top: 8px;">
+                        ELIMINAR SELECCIÓN DE GRÁFICA
+                    </button>
+                    <div style="margin-top: 12px; font-size: 0.85rem; color: #666;">
+                        Total de puntos: <strong id="totalPointsDisplay">0</strong><br>
+                        Seleccionados: <strong id="selectedPointsDisplay">0</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ajuste -->
+            <div class="panel-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    AJUSTE DE CURVA <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Tipo</label>
+                        <select id="fitType">
+                            <option value="none">Ninguno</option>
+                            <option value="linear">Lineal</option>
+                            <option value="quadratic">Cuadrático</option>
+                            <option value="exponential">Exponencial</option>
+                            <option value="power">Potencial</option>
+                            <option value="logarithmic">Logarítmico</option>
+                            <option value="sinusoidal">Sinusoidal</option>
+                        </select>
+                    </div>
+                    <button class="toolbar-btn primary btn-full" id="calculateFitBtn">
+                        CALCULAR
+                    </button>
+                    <button class="toolbar-btn btn-full" id="clearFitBtn">
+                        LIMPIAR
+                    </button>
+                    <div id="fitResults"></div>
+                </div>
+            </div>
+
+            <!-- Datos -->
+            <div class="panel-section" style="flex: 1; display: flex; flex-direction: column;">
+                <div class="section-header" onclick="toggleSection(this)">
+                    DATOS <span>▼</span>
+                </div>
+                <div class="section-content" style="flex: 1; overflow-y: auto; max-height: 400px; padding: 0;">
                     <table class="data-table">
                         <thead>
                             <tr>
-                                <th>SEL</th>
-                                <th>TIEMPO</th>
-                                <th>VALOR</th>
+                                <th>#</th>
+                                <th>T</th>
+                                <th>Y</th>
+                                <th>📹</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody id="dataTableBody">
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px;">SIN DATOS</td>
+                            </tr>
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            <!-- Sección de Depuración de Datos -->
-            <div class="panel-section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>DEPURACIÓN DE DATOS</span>
-                    <span>▼</span>
-                </div>
-                <div class="section-content">
-                    <div class="input-row">
-                        <label>Rango de eliminación:</label>
-                        <div class="range-inputs">
-                            <input type="number" id="rangeStart" placeholder="Inicio" step="any">
-                            <input type="number" id="rangeEnd" placeholder="Fin" step="any">
-                        </div>
-                        <div class="range-info">
-                            Elimina puntos en el rango de tiempo especificado
-                        </div>
-                    </div>
-                    <button class="toolbar-btn btn-full danger" id="deleteRangeBtn">ELIMINAR RANGO</button>
-                    <button class="toolbar-btn btn-full danger" id="deleteSelectedGraphBtn" style="margin-top: 8px;">ELIMINAR SELECCIÓN DE GRÁFICA</button>
-                </div>
-            </div>
-
-            <!-- Configuración de ejes -->
-            <div class="panel-section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>CONFIGURACIÓN</span>
-                    <span>▼</span>
-                </div>
-                <div class="section-content">
-                    <div class="input-row">
-                        <label>EJE X:</label>
-                        <input type="text" id="xAxisLabel" value="Tiempo (s)">
-                    </div>
-                    <div class="input-row">
-                        <label>EJE Y:</label>
-                        <input type="text" id="yAxisLabel" value="Valor">
-                    </div>
-                    <div class="input-row">
-                        <label>UNIDAD DE TIEMPO:</label>
-                        <select id="timeUnit">
-                            <option value="1">Segundos (s)</option>
-                            <option value="1000">Milisegundos (ms)</option>
-                            <option value="0.001">Kilosegundos (ks)</option>
-                            <option value="60">Minutos (min)</option>
-                        </select>
-                    </div>
-                    <button class="toolbar-btn btn-full" id="setZeroBtn">DEFINIR t=0</button>
-                </div>
-            </div>
-
-            <!-- Ajustes de curva -->
-            <div class="panel-section">
-                <div class="section-header" onclick="toggleSection(this)">
-                    <span>AJUSTE DE CURVA</span>
-                    <span>▶</span>
-                </div>
-                <div class="section-content collapsed">
-                    <div class="input-row">
-                        <label>TIPO DE AJUSTE:</label>
-                        <select id="fitType">
-                            <option value="none">Ninguno</option>
-                            <option value="linear">Lineal (y = mx + b)</option>
-                            <option value="quadratic">Cuadrático (y = ax² + bx + c)</option>
-                            <option value="exponential">Exponencial (y = ae^(bx))</option>
-                            <option value="power">Potencial (y = ax^b)</option>
-                            <option value="logarithmic">Logarítmico (y = a·ln(x) + b)</option>
-                        </select>
-                    </div>
-                    <button class="toolbar-btn btn-full primary" id="calculateFitBtn">CALCULAR</button>
-                    <button class="toolbar-btn btn-full" id="clearFitBtn">LIMPIAR AJUSTE</button>
-                    <div id="fitResults"></div>
                 </div>
             </div>
         </div>
@@ -529,90 +704,277 @@
     <!-- Modal de estadísticas -->
     <div class="modal" id="statsModal">
         <div class="modal-content">
-            <div class="modal-title">ESTADÍSTICAS</div>
+            <div class="modal-header">ESTADÍSTICAS</div>
             <div class="modal-body" id="statsBody"></div>
-            <button class="modal-btn" onclick="closeStatsModal()">CERRAR</button>
+            <button class="toolbar-btn primary modal-close" onclick="closeStatsModal()">CERRAR</button>
         </div>
     </div>
 
     <!-- Modal de video -->
     <div class="modal" id="videoModal">
-        <div class="modal-content">
-            <div class="modal-title">REPRODUCCIÓN DE VIDEO</div>
+        <div class="modal-content video-modal">
+            <div class="modal-header">REPRODUCCIÓN DE VIDEO</div>
             <div class="video-container">
                 <video id="playbackVideo" controls></video>
             </div>
-            <button class="modal-btn" onclick="closeVideoModal()">CERRAR</button>
+            <div class="video-info" id="videoInfo"></div>
+            <div class="video-controls">
+                <button class="toolbar-btn primary" onclick="closeVideoModal()">CERRAR</button>
+            </div>
         </div>
     </div>
 
-    <!-- Modal de ayuda -->
+    <!-- Modal de ayuda/tutorial -->
     <div class="modal" id="helpModal">
-        <div class="modal-content">
-            <div class="modal-title">AYUDA</div>
-            <div class="modal-body">
-                <div class="help-section">
-                    <h3>CONEXIÓN</h3>
-                    <p>Conecta tu micro:bit vía USB usando el botón CONECTAR. Los datos se recibirán automáticamente.</p>
+        <div class="modal-content help-modal">
+            <div class="modal-header">TUTORIAL Y GUÍA DE USO</div>
+            
+            <div class="help-section">
+                <h3>📋 COMPONENTES DEL SISTEMA</h3>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">●</div>
+                    <div class="feature-text">
+                        <strong>CONECTAR</strong>
+                        Establece conexión serial con la micro:bit vía USB. Usa Web Serial API del navegador.
+                    </div>
                 </div>
-                <div class="help-section">
-                    <h3>GRABACIÓN</h3>
-                    <p>Graba video sincronizado con tus datos usando los botones GRABAR y DETENER. Puedes reproducirlo después.</p>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">▶</div>
+                    <div class="feature-text">
+                        <strong>CAPTURAR / DETENER</strong>
+                        Inicia y detiene la captura de datos en tiempo real. Si la cámara está activa, también graba video sincronizado.
+                    </div>
                 </div>
-                <div class="help-section">
-                    <h3>HERRAMIENTAS</h3>
-                    <ul>
-                        <li><strong>EXAMINAR:</strong> Activa el modo de examinación para ver valores exactos en la gráfica.</li>
-                        <li><strong>ESTADÍSTICAS:</strong> Muestra estadísticas descriptivas de tus datos.</li>
-                        <li><strong>EXPORTAR CSV:</strong> Descarga tus datos en formato CSV.</li>
-                        <li><strong>ELIMINAR SELECCIÓN:</strong> Elimina los puntos seleccionados desde la gráfica.</li>
-                    </ul>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📹</div>
+                    <div class="feature-text">
+                        <strong>CÁMARA</strong>
+                        Activa la webcam para grabar video del experimento. El video se sincroniza automáticamente con los datos capturados.
+                    </div>
                 </div>
-                <div class="help-section">
-                    <h3>DEPURACIÓN DE DATOS</h3>
-                    <p>Elimina datos por rango de tiempo o selección desde la gráfica. Haz clic en puntos de la gráfica para seleccionarlos.</p>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">⊕</div>
+                    <div class="feature-text">
+                        <strong>EXAMINE</strong>
+                        Herramienta para inspeccionar puntos en la gráfica. Pasa el mouse sobre la gráfica para ver coordenadas exactas.
+                    </div>
                 </div>
-                <div class="help-section">
-                    <h3>AJUSTE DE CURVA</h3>
-                    <p>Calcula regresiones para encontrar ecuaciones que describan tus datos. Soporta ajustes lineales, cuadráticos, exponenciales y más.</p>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">Σ</div>
+                    <div class="feature-text">
+                        <strong>ESTADÍSTICAS</strong>
+                        Calcula media, mínimo, máximo, desviación estándar y número total de puntos.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">
+                        <strong>AJUSTE DE CURVA</strong>
+                        Aplica ajustes por mínimos cuadrados: lineal, cuadrático, exponencial, potencial y logarítmico.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-text">
+                        <strong>EXPORTAR</strong>
+                        Descarga los datos en formato CSV para análisis posterior en Excel, Python, etc.
+                    </div>
                 </div>
             </div>
-            <button class="modal-btn" onclick="closeHelpModal()">CERRAR</button>
+            
+            <div class="help-section">
+                <h3>🚀 FLUJO DE TRABAJO</h3>
+                <p><span class="step-number">1</span> Conecta tu micro:bit por USB a la computadora</p>
+                <p><span class="step-number">2</span> Haz clic en <strong>CONECTAR</strong> y selecciona el puerto USB</p>
+                <p><span class="step-number">3</span> (Opcional) Activa la <strong>CÁMARA</strong> para grabar video</p>
+                <p><span class="step-number">4</span> Haz clic en <strong>CAPTURAR</strong> para iniciar</p>
+                <p><span class="step-number">5</span> Realiza tu experimento</p>
+                <p><span class="step-number">6</span> Haz clic en <strong>DETENER</strong> cuando termines</p>
+                <p><span class="step-number">7</span> Analiza los datos:</p>
+                <ul>
+                    <li>Click en puntos para seleccionar</li>
+                    <li>Botón ▶ en tabla para ver video en ese momento</li>
+                    <li>Configura ejes y establece tiempo cero</li>
+                    <li>Calcula ajustes de curva</li>
+                    <li>Exporta resultados</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>💻 CÓDIGO PARA MICRO:BIT</h3>
+                <p>Tu micro:bit debe enviar datos por serial. Aquí tienes ejemplos básicos:</p>
+                
+                <strong>JavaScript (MakeCode):</strong>
+                <div class="code-block">
+                    <pre>// Enviar valor del acelerómetro
+basic.forever(function () {
+    serial.writeNumber(input.acceleration(Dimension.X))
+    serial.writeLine("")
+    basic.pause(100)  // 100ms = 10 datos/segundo
+})</pre>
+                </div>
+                
+                <strong>Python (MicroPython):</strong>
+                <div class="code-block">
+                    <pre># Enviar valor de temperatura
+from microbit import *
+
+while True:
+    valor = temperature()
+    print(valor)
+    sleep(100)</pre>
+                </div>
+                
+                <p><strong>⚠️ IMPORTANTE:</strong></p>
+                <ul>
+                    <li>Envía <strong>SOLO EL NÚMERO</strong>, sin texto adicional</li>
+                    <li>Usa <code>serial.writeNumber()</code> en JavaScript o <code>print()</code> en Python</li>
+                    <li>Termina cada valor con salto de línea (<code>serial.writeLine("")</code> o automático con <code>print()</code>)</li>
+                    <li>Ajusta <code>basic.pause()</code> o <code>sleep()</code> según la frecuencia deseada</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>📹 VIDEO SINCRONIZADO</h3>
+                <p>El sistema graba video del experimento y lo sincroniza con los datos:</p>
+                <ul>
+                    <li>Activa la cámara <strong>ANTES</strong> de capturar datos</li>
+                    <li>Al hacer clic en <strong>CAPTURAR</strong>, inicia video + datos simultáneamente</li>
+                    <li>Cada dato tiene un timestamp asociado al video</li>
+                    <li>Click en botón <strong>▶</strong> en la tabla para ver ese momento exacto</li>
+                    <li>El video se reproduce desde el instante del punto seleccionado</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>🎯 EJEMPLOS DE SENSORES</h3>
+                
+                <strong>Acelerómetro (X, Y o Z):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.acceleration(Dimension.X))
+    serial.writeLine("")
+    basic.pause(50)
+})</pre>
+                </div>
+                
+                <strong>Nivel de luz:</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.lightLevel())
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+                
+                <strong>Brújula (orientación):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.compassHeading())
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+                
+                <strong>Sensor analógico (Pin P0):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    let valor = pins.analogReadPin(AnalogPin.P0)
+    serial.writeNumber(valor)
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+            </div>
+            
+            <div class="help-section">
+                <h3>⚙️ REQUISITOS DEL SISTEMA</h3>
+                <ul>
+                    <li><strong>Navegador:</strong> Chrome, Edge u Opera (con Web Serial API)</li>
+                    <li><strong>Sistema:</strong> Windows, macOS o Linux</li>
+                    <li><strong>Hardware:</strong> micro:bit v1 o v2 con cable USB</li>
+                    <li><strong>Webcam:</strong> Opcional, para grabación de video</li>
+                    <li><strong>Conexión:</strong> No requiere internet una vez cargada la página</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>❓ SOLUCIÓN DE PROBLEMAS</h3>
+                
+                <p><strong>No aparece el puerto al conectar:</strong></p>
+                <ul>
+                    <li>Verifica que el cable USB esté bien conectado</li>
+                    <li>Prueba con otro puerto USB</li>
+                    <li>Reinicia el navegador</li>
+                </ul>
+                
+                <p><strong>No llegan datos:</strong></p>
+                <ul>
+                    <li>Asegúrate de que el código esté corriendo en la micro:bit</li>
+                    <li>Verifica que uses <code>serial.writeNumber()</code> + <code>serial.writeLine("")</code></li>
+                    <li>No envíes texto, solo números</li>
+                </ul>
+                
+                <p><strong>La cámara no funciona:</strong></p>
+                <ul>
+                    <li>Permite el acceso a la cámara cuando el navegador lo solicite</li>
+                    <li>Verifica que otra aplicación no esté usando la cámara</li>
+                    <li>Prueba en modo incógnito del navegador</li>
+                </ul>
+                
+                <p><strong>El video y los datos no coinciden:</strong></p>
+                <ul>
+                    <li>Activa la cámara ANTES de capturar datos</li>
+                    <li>Ambos deben iniciar con el mismo botón CAPTURAR</li>
+                </ul>
+            </div>
+            
+            <button class="toolbar-btn primary modal-close" onclick="closeHelpModal()">CERRAR</button>
         </div>
     </div>
 
     <script>
-        // Estado global
-        const state = {
+        // Estado
+        let state = {
             port: null,
             reader: null,
             isConnected: false,
+            isCollecting: false,
             rawData: [],
-            timeZeroOffset: 0,
-            examineMode: false,
             selectedPoints: new Set(),
+            timeZeroOffset: 0,
             fitData: null,
+            examineMode: false,
+            // Video
+            cameraActive: false,
+            mediaStream: null,
             mediaRecorder: null,
             recordedChunks: [],
             videoBlob: null,
-            isRecording: false
+            recordingStartTime: null,
+            // Selección de área
+            isSelecting: false,
+            selectionStart: null,
+            selectionEnd: null
         };
 
-        // Referencias a elementos del DOM
+        // DOM
         const connectBtn = document.getElementById('connectBtn');
-        const recordBtn = document.getElementById('recordBtn');
-        const stopRecordBtn = document.getElementById('stopRecordBtn');
-        const playVideoBtn = document.getElementById('playVideoBtn');
+        const collectBtn = document.getElementById('collectBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const cameraBtn = document.getElementById('cameraBtn');
         const examineBtn = document.getElementById('examineBtn');
         const statsBtn = document.getElementById('statsBtn');
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
-        const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-        const deleteSelectedGraphBtn = document.getElementById('deleteSelectedGraphBtn');
-        const deleteRangeBtn = document.getElementById('deleteRangeBtn');
-        const helpBtn = document.getElementById('helpBtn');
         const statusText = document.getElementById('statusText');
-        const dataTableBody = document.getElementById('dataTableBody');
         const xAxisLabel = document.getElementById('xAxisLabel');
         const yAxisLabel = document.getElementById('yAxisLabel');
         const timeUnit = document.getElementById('timeUnit');
@@ -621,614 +983,834 @@
         const calculateFitBtn = document.getElementById('calculateFitBtn');
         const clearFitBtn = document.getElementById('clearFitBtn');
         const fitResults = document.getElementById('fitResults');
+        const dataTableBody = document.getElementById('dataTableBody');
+        const graphTitle = document.getElementById('graphTitle');
+        const cameraPreview = document.getElementById('cameraPreview');
+        const recordingIndicator = document.getElementById('recordingIndicator');
+        const videoSection = document.getElementById('videoSection');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
         const playbackVideo = document.getElementById('playbackVideo');
+        const videoInfo = document.getElementById('videoInfo');
+        const helpBtn = document.getElementById('helpBtn');
         const rangeStart = document.getElementById('rangeStart');
         const rangeEnd = document.getElementById('rangeEnd');
+        const selectRangeBtn = document.getElementById('selectRangeBtn');
+        const deleteRangeBtn = document.getElementById('deleteRangeBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        const deleteSelectedGraphBtn = document.getElementById('deleteSelectedGraphBtn');
+        const totalPointsDisplay = document.getElementById('totalPointsDisplay');
+        const selectedPointsDisplay = document.getElementById('selectedPointsDisplay');
 
-        // Configuración de Chart.js
-        const ctx = document.getElementById('dataChart').getContext('2d');
+        if (!('serial' in navigator)) {
+            alert('Web Serial API no soportada. Usa Chrome, Edge u Opera.');
+        }
+
+        // Gráfica
+        const ctx = document.getElementById('myChart').getContext('2d');
         const chart = new Chart(ctx, {
-            type: 'scatter',
+            type: 'line',
             data: {
+                labels: [],
                 datasets: [{
                     label: 'Datos',
                     data: [],
-                    backgroundColor: function(context) {
-                        const index = context.dataIndex;
-                        const dataPoint = state.rawData[index];
-                        return dataPoint && state.selectedPoints.has(dataPoint.id) ? 
-                               'rgba(0, 0, 0, 1)' : 'rgba(100, 100, 100, 0.7)';
-                    },
-                    borderColor: 'rgba(0, 0, 0, 0.8)',
-                    borderWidth: 1,
-                    pointRadius: 5,
-                    pointHoverRadius: 7
+                    borderColor: '#000',
+                    backgroundColor: 'transparent',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    pointHoverRadius: 5,
+                    pointBackgroundColor: '#000',
+                    pointBorderColor: '#000',
+                    tension: 0
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                onClick: handleChartClick,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: { enabled: false }
+                },
                 scales: {
                     x: {
-                        type: 'linear',
-                        position: 'bottom',
                         title: {
                             display: true,
-                            text: 'Tiempo (s)',
-                            font: { weight: 'bold', size: 14 }
+                            text: 'TIEMPO (S)',
+                            font: { size: 11, weight: 'bold' }
                         },
-                        grid: { color: '#e0e0e0' },
-                        ticks: { color: '#000', font: { weight: '600' } }
+                        grid: { color: '#e0e0e0', borderColor: '#000', borderWidth: 2 },
+                        ticks: { font: { size: 10 } }
                     },
                     y: {
                         title: {
                             display: true,
-                            text: 'Valor',
-                            font: { weight: 'bold', size: 14 }
+                            text: 'VALOR',
+                            font: { size: 11, weight: 'bold' }
                         },
-                        grid: { color: '#e0e0e0' },
-                        ticks: { color: '#000', font: { weight: '600' } }
+                        grid: { color: '#e0e0e0', borderColor: '#000', borderWidth: 2 },
+                        ticks: { font: { size: 10 } }
                     }
-                },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `(${context.parsed.x.toFixed(4)}, ${context.parsed.y.toFixed(4)})`;
-                            }
-                        }
-                    }
-                },
-                onClick: handleChartClick,
-                onHover: handleChartHover
+                }
             }
         });
 
-        // ========== CONEXIÓN SERIAL ==========
-        
+        // ========== CÁMARA ==========
+
+        cameraBtn.addEventListener('click', async () => {
+            if (!state.cameraActive) {
+                try {
+                    state.mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                        video: true, 
+                        audio: false 
+                    });
+                    cameraPreview.srcObject = state.mediaStream;
+                    state.cameraActive = true;
+                    videoSection.style.display = 'block';
+                    cameraBtn.classList.add('primary');
+                } catch (err) {
+                    alert('No se pudo acceder a la cámara: ' + err.message);
+                }
+            }
+        });
+
+        stopCameraBtn.addEventListener('click', () => {
+            stopCamera();
+        });
+
+        function stopCamera() {
+            if (state.mediaStream) {
+                state.mediaStream.getTracks().forEach(track => track.stop());
+                state.mediaStream = null;
+                cameraPreview.srcObject = null;
+            }
+            state.cameraActive = false;
+            videoSection.style.display = 'none';
+            cameraBtn.classList.remove('primary');
+            
+            if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+                state.mediaRecorder.stop();
+            }
+        }
+
+        function startVideoRecording() {
+            if (!state.cameraActive || !state.mediaStream) return;
+            
+            state.recordedChunks = [];
+            state.recordingStartTime = Date.now();
+            
+            state.mediaRecorder = new MediaRecorder(state.mediaStream, {
+                mimeType: 'video/webm;codecs=vp9'
+            });
+            
+            state.mediaRecorder.ondataavailable = (event) => {
+                if (event.data.size > 0) {
+                    state.recordedChunks.push(event.data);
+                }
+            };
+            
+            state.mediaRecorder.onstop = () => {
+                state.videoBlob = new Blob(state.recordedChunks, { type: 'video/webm' });
+            };
+            
+            state.mediaRecorder.start();
+            recordingIndicator.classList.add('active');
+        }
+
+        function stopVideoRecording() {
+            if (state.mediaRecorder && state.mediaRecorder.state === 'recording') {
+                state.mediaRecorder.stop();
+                recordingIndicator.classList.remove('active');
+            }
+        }
+
+        function showVideoAtTime(dataPoint) {
+            if (!state.videoBlob) {
+                alert('No hay video grabado para este experimento');
+                return;
+            }
+            
+            const timeUnitValue = parseFloat(timeUnit.value);
+            const adjustedTime = (dataPoint.time - state.timeZeroOffset) / timeUnitValue;
+            const videoTime = (dataPoint.time - state.recordingStartTime) / 1000; // segundos
+            
+            if (videoTime < 0) {
+                alert('Este punto fue capturado antes de iniciar la grabación');
+                return;
+            }
+            
+            // Crear URL del video
+            const videoURL = URL.createObjectURL(state.videoBlob);
+            playbackVideo.src = videoURL;
+            
+            // Ir al momento específico
+            playbackVideo.currentTime = videoTime;
+            
+            // Mostrar info
+            videoInfo.innerHTML = `
+                TIEMPO: ${adjustedTime.toFixed(3)} ${xAxisLabel.value}<br>
+                VALOR: ${dataPoint.value.toFixed(4)}<br>
+                VIDEO EN: ${videoTime.toFixed(2)} segundos
+            `;
+            
+            document.getElementById('videoModal').classList.add('active');
+        }
+
+        // ========== CONEXIÓN MICRO:BIT ==========
+
         connectBtn.addEventListener('click', async () => {
-            if (!state.isConnected) {
-                try {
-                    state.port = await navigator.serial.requestPort();
-                    await state.port.open({ baudRate: 115200 });
-                    
-                    state.isConnected = true;
-                    connectBtn.textContent = 'DESCONECTAR';
-                    connectBtn.classList.add('primary');
-                    statusText.textContent = 'CONECTADO';
-                    recordBtn.disabled = false;
-                    
-                    readSerialData();
-                } catch (err) {
-                    console.error('Error al conectar:', err);
-                    alert('No se pudo conectar al puerto serial');
-                }
-            } else {
-                try {
-                    if (state.reader) {
-                        await state.reader.cancel();
-                    }
-                    if (state.port) {
-                        await state.port.close();
-                    }
-                    
-                    state.isConnected = false;
-                    state.port = null;
-                    state.reader = null;
-                    connectBtn.textContent = 'CONECTAR';
-                    connectBtn.classList.remove('primary');
-                    statusText.textContent = 'DESCONECTADO';
-                    recordBtn.disabled = true;
-                } catch (err) {
-                    console.error('Error al desconectar:', err);
-                }
+            try {
+                state.port = await navigator.serial.requestPort();
+                await state.port.open({ baudRate: 115200 });
+                state.isConnected = true;
+                
+                connectBtn.style.display = 'none';
+                collectBtn.style.display = 'inline-block';
+                statusText.textContent = 'CONECTADO';
+            } catch (err) {
+                alert('Error: ' + err.message);
             }
         });
 
-        async function readSerialData() {
-            const decoder = new TextDecoderStream();
-            state.port.readable.pipeTo(decoder.writable);
-            state.reader = decoder.readable.getReader();
+        collectBtn.addEventListener('click', () => {
+            state.isCollecting = true;
+            collectBtn.style.display = 'none';
+            stopBtn.style.display = 'inline-block';
+            statusText.textContent = 'CAPTURANDO';
             
-            let buffer = '';
+            // Iniciar grabación de video si la cámara está activa (NO bloquea)
+            if (state.cameraActive) {
+                startVideoRecording();
+            }
             
+            // Iniciar lectura de datos (proceso paralelo)
+            startReading();
+        });
+
+        stopBtn.addEventListener('click', async () => {
+            state.isCollecting = false;
+            
+            // Detener grabación de video
+            stopVideoRecording();
+            
+            // Cancelar lectura del puerto serial
+            if (state.reader) {
+                try {
+                    await state.reader.cancel();
+                } catch (err) {
+                    console.error('Error al cancelar reader:', err);
+                }
+            }
+            
+            collectBtn.style.display = 'inline-block';
+            stopBtn.style.display = 'none';
+            statusText.textContent = 'PAUSADO';
+        });
+
+        async function startReading() {
             try {
-                while (true) {
+                const textDecoder = new TextDecoderStream();
+                const readableStreamClosed = state.port.readable.pipeTo(textDecoder.writable);
+                state.reader = textDecoder.readable.getReader();
+
+                let buffer = '';
+
+                while (state.isCollecting) {
                     const { value, done } = await state.reader.read();
                     if (done) break;
                     
                     buffer += value;
-                    let lines = buffer.split('\n');
+                    const lines = buffer.split('\n');
                     buffer = lines.pop();
                     
-                    for (let line of lines) {
-                        line = line.trim();
-                        if (line) {
-                            processDataLine(line);
+                    for (const line of lines) {
+                        const trimmed = line.trim();
+                        if (trimmed) {
+                            const numValue = parseFloat(trimmed);
+                            if (!isNaN(numValue)) {
+                                const timestamp = Date.now();
+                                state.rawData.push({
+                                    time: timestamp,
+                                    value: numValue,
+                                    id: `${timestamp}-${Math.random()}`
+                                });
+                                // Actualizar display de forma eficiente (sin bloquear)
+                                requestAnimationFrame(() => updateDisplay());
+                            }
                         }
                     }
                 }
             } catch (err) {
-                console.error('Error leyendo datos:', err);
-            }
-        }
-
-        function processDataLine(line) {
-            try {
-                const parts = line.split(',');
-                if (parts.length >= 2) {
-                    const time = parseFloat(parts[0]);
-                    const value = parseFloat(parts[1]);
-                    
-                    if (!isNaN(time) && !isNaN(value)) {
-                        const id = Date.now() + Math.random();
-                        state.rawData.push({ id, time, value });
-                        updateDisplay();
+                if (err.name !== 'NetworkError') {
+                    console.error('Error en lectura:', err);
+                }
+            } finally {
+                if (state.reader) {
+                    try {
+                        state.reader.releaseLock();
+                    } catch (err) {
+                        // Ignorar errores al liberar
                     }
                 }
-            } catch (err) {
-                console.error('Error procesando línea:', err);
             }
         }
 
-        // ========== GRABACIÓN DE VIDEO ==========
+        // ========== VISUALIZACIÓN (optimizada para no bloquear) ==========
 
-        recordBtn.addEventListener('click', async () => {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    video: true, 
-                    audio: false 
-                });
-                
-                state.recordedChunks = [];
-                state.mediaRecorder = new MediaRecorder(stream, {
-                    mimeType: 'video/webm'
-                });
-                
-                state.mediaRecorder.ondataavailable = (e) => {
-                    if (e.data.size > 0) {
-                        state.recordedChunks.push(e.data);
-                    }
-                };
-                
-                state.mediaRecorder.onstop = () => {
-                    state.videoBlob = new Blob(state.recordedChunks, { type: 'video/webm' });
-                    playVideoBtn.disabled = false;
-                    stream.getTracks().forEach(track => track.stop());
-                };
-                
-                state.mediaRecorder.start();
-                state.isRecording = true;
-                recordBtn.disabled = true;
-                stopRecordBtn.disabled = false;
-                statusText.textContent = 'GRABANDO...';
-            } catch (err) {
-                console.error('Error iniciando grabación:', err);
-                alert('No se pudo acceder a la cámara');
-            }
-        });
-
-        stopRecordBtn.addEventListener('click', () => {
-            if (state.mediaRecorder && state.isRecording) {
-                state.mediaRecorder.stop();
-                state.isRecording = false;
-                recordBtn.disabled = false;
-                stopRecordBtn.disabled = true;
-                statusText.textContent = state.isConnected ? 'CONECTADO' : 'DESCONECTADO';
-            }
-        });
-
-        playVideoBtn.addEventListener('click', () => {
-            if (state.videoBlob) {
-                playbackVideo.src = URL.createObjectURL(state.videoBlob);
-                document.getElementById('videoModal').classList.add('active');
-            }
-        });
-
-        // ========== ACTUALIZACIÓN DE DISPLAY ==========
+        let updateScheduled = false;
 
         function updateDisplay() {
-            const timeUnitValue = parseFloat(timeUnit.value);
+            // Evitar actualizaciones múltiples simultáneas
+            if (updateScheduled) return;
+            updateScheduled = true;
             
-            // Actualizar gráfica
-            chart.data.datasets[0].data = state.rawData.map(d => ({
-                x: (d.time - state.timeZeroOffset) / timeUnitValue,
-                y: d.value
-            }));
-            
-            chart.options.scales.x.title.text = xAxisLabel.value;
-            chart.options.scales.y.title.text = yAxisLabel.value;
-            chart.update();
-            
-            // Actualizar tabla
-            dataTableBody.innerHTML = state.rawData.map(d => {
-                const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
-                const isSelected = state.selectedPoints.has(d.id);
-                return `
-                    <tr class="${isSelected ? 'selected' : ''}" data-id="${d.id}">
-                        <td><input type="checkbox" ${isSelected ? 'checked' : ''} onchange="toggleSelect('${d.id}')"></td>
-                        <td><input type="number" value="${adjustedTime.toFixed(4)}" step="any" onchange="updateTime('${d.id}', this.value)"></td>
-                        <td><input type="number" value="${d.value.toFixed(4)}" step="any" onchange="updateValue('${d.id}', this.value)"></td>
-                        <td><button class="delete-btn" onclick="deletePoint('${d.id}')">×</button></td>
-                    </tr>
-                `;
-            }).join('');
-            
-            // Actualizar ajuste si existe
-            if (state.fitData) {
-                updateFitCurve();
+            requestAnimationFrame(() => {
+                const timeUnitValue = parseFloat(timeUnit.value);
+                const displayData = state.rawData.map(d => ({
+                    ...d,
+                    adjustedTime: (d.time - state.timeZeroOffset) / timeUnitValue
+                }));
+
+                graphTitle.textContent = `${yAxisLabel.value.toUpperCase()} vs ${xAxisLabel.value.toUpperCase()}`;
+                chart.options.scales.x.title.text = xAxisLabel.value.toUpperCase();
+                chart.options.scales.y.title.text = yAxisLabel.value.toUpperCase();
+
+                chart.data.labels = displayData.map(d => d.adjustedTime.toFixed(3));
+                chart.data.datasets[0].data = displayData.map(d => d.value);
+                chart.data.datasets[0].pointBackgroundColor = displayData.map(d =>
+                    state.selectedPoints.has(d.id) ? '#666' : '#000'
+                );
+                chart.data.datasets[0].pointRadius = displayData.map(d =>
+                    state.selectedPoints.has(d.id) ? 6 : 3
+                );
+
+                if (state.fitData && chart.data.datasets.length > 1) {
+                    updateFitCurve(displayData);
+                }
+
+                chart.update('none');
+                
+                // Actualizar tabla solo si no estamos capturando (para no sobrecargar)
+                if (!state.isCollecting || state.rawData.length % 10 === 0) {
+                    updateTable(displayData);
+                }
+
+                exportBtn.disabled = state.rawData.length === 0;
+                setZeroBtn.disabled = state.selectedPoints.size !== 1;
+                
+                updateScheduled = false;
+            });
+        }
+
+        function updateTable(displayData) {
+            if (displayData.length === 0) {
+                dataTableBody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">SIN DATOS</td></tr>';
+                return;
             }
-            
-            // Actualizar estado del botón de eliminar selección
-            deleteSelectedBtn.disabled = state.selectedPoints.size === 0;
-            deleteSelectedGraphBtn.disabled = state.selectedPoints.size === 0;
+
+            dataTableBody.innerHTML = displayData.map((d, idx) => `
+                <tr class="${state.selectedPoints.has(d.id) ? 'selected' : ''}" onclick="toggleSelect('${d.id}')">
+                    <td>${idx + 1}</td>
+                    <td>${d.adjustedTime.toFixed(3)}</td>
+                    <td>
+                        <input type="number" value="${d.value}" 
+                               onchange="editValue('${d.id}', this.value)"
+                               onclick="event.stopPropagation()" step="0.01">
+                    </td>
+                    <td>
+                        <button class="toolbar-btn" 
+                                style="padding: 2px 6px; font-size: 0.8rem; border: 1px solid black;"
+                                onclick="showVideoForPoint('${d.id}'); event.stopPropagation()">
+                            ▶
+                        </button>
+                    </td>
+                    <td>
+                        <button class="delete-btn" onclick="deletePoint('${d.id}'); event.stopPropagation()">
+                            ×
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function showVideoForPoint(id) {
+            const point = state.rawData.find(d => d.id === id);
+            if (point) {
+                showVideoAtTime(point);
+            }
         }
 
         function toggleSelect(id) {
             if (state.selectedPoints.has(id)) {
                 state.selectedPoints.delete(id);
             } else {
-                state.selectedPoints.add(id);
+                state.selectedPoints.add(id); // Permitir múltiples selecciones
             }
             updateDisplay();
         }
 
-        function updateTime(id, newTime) {
-            const timeUnitValue = parseFloat(timeUnit.value);
-            const point = state.rawData.find(d => d.id == id);
+        function editValue(id, newValue) {
+            const point = state.rawData.find(d => d.id === id);
             if (point) {
-                point.time = parseFloat(newTime) * timeUnitValue + state.timeZeroOffset;
-                updateDisplay();
-            }
-        }
-
-        function updateValue(id, newValue) {
-            const point = state.rawData.find(d => d.id == id);
-            if (point) {
-                point.value = parseFloat(newValue);
+                point.value = parseFloat(newValue) || point.value;
                 updateDisplay();
             }
         }
 
         function deletePoint(id) {
-            state.rawData = state.rawData.filter(d => d.id != id);
+            state.rawData = state.rawData.filter(d => d.id !== id);
             state.selectedPoints.delete(id);
             updateDisplay();
         }
 
-        // ========== ELIMINACIÓN POR RANGO ==========
-
-        deleteRangeBtn.addEventListener('click', () => {
-            const start = parseFloat(rangeStart.value);
-            const end = parseFloat(rangeEnd.value);
-            
-            if (isNaN(start) || isNaN(end)) {
-                alert('Por favor ingresa valores válidos para el rango');
-                return;
-            }
-            
-            if (start >= end) {
-                alert('El inicio debe ser menor que el fin');
-                return;
-            }
-            
-            const timeUnitValue = parseFloat(timeUnit.value);
-            const initialCount = state.rawData.length;
-            
-            // Filtrar datos fuera del rango
-            state.rawData = state.rawData.filter(d => {
-                const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
-                const inRange = adjustedTime >= start && adjustedTime <= end;
-                
-                // Si está en el rango, también quitarlo de seleccionados
-                if (inRange) {
-                    state.selectedPoints.delete(d.id);
-                }
-                
-                return !inRange;
-            });
-            
-            const deletedCount = initialCount - state.rawData.length;
-            
-            if (deletedCount > 0) {
-                alert(`Se eliminaron ${deletedCount} punto(s)`);
-                updateDisplay();
-                
-                // Limpiar campos
-                rangeStart.value = '';
-                rangeEnd.value = '';
-            } else {
-                alert('No se encontraron puntos en el rango especificado');
-            }
-        });
-
-        // ========== ELIMINACIÓN DE SELECCIÓN DESDE GRÁFICA ==========
-
-        deleteSelectedGraphBtn.addEventListener('click', () => {
-            if (state.selectedPoints.size === 0) {
-                alert('No hay puntos seleccionados');
-                return;
-            }
-            
-            const count = state.selectedPoints.size;
-            
-            if (confirm(`¿Eliminar ${count} punto(s) seleccionado(s)?`)) {
-                // Eliminar puntos seleccionados
-                state.rawData = state.rawData.filter(d => !state.selectedPoints.has(d.id));
-                state.selectedPoints.clear();
-                updateDisplay();
-                
-                alert(`Se eliminaron ${count} punto(s)`);
-            }
-        });
-
-        deleteSelectedBtn.addEventListener('click', () => {
-            if (state.selectedPoints.size === 0) {
-                alert('No hay puntos seleccionados');
-                return;
-            }
-            
-            const count = state.selectedPoints.size;
-            
-            if (confirm(`¿Eliminar ${count} punto(s) seleccionado(s)?`)) {
-                state.rawData = state.rawData.filter(d => !state.selectedPoints.has(d.id));
-                state.selectedPoints.clear();
-                updateDisplay();
-            }
-        });
-
-        // ========== CONFIGURACIÓN DE t=0 ==========
+        // ========== CONTROLES ==========
 
         setZeroBtn.addEventListener('click', () => {
-            if (state.rawData.length === 0) {
-                alert('No hay datos');
-                return;
+            if (state.selectedPoints.size === 1) {
+                const selectedId = Array.from(state.selectedPoints)[0];
+                const point = state.rawData.find(d => d.id === selectedId);
+                if (point) {
+                    state.timeZeroOffset = point.time;
+                    updateDisplay();
+                }
+            } else if (state.selectedPoints.size > 1) {
+                alert('Selecciona solo UN punto para establecer como tiempo cero');
             }
-            
-            const firstTime = state.rawData[0].time;
-            state.timeZeroOffset = firstTime;
-            updateDisplay();
         });
-
-        // ========== AJUSTE DE CURVA ==========
 
         calculateFitBtn.addEventListener('click', () => {
             const type = fitType.value;
-            
-            if (type === 'none') {
-                alert('Selecciona un tipo de ajuste');
+            if (type === 'none' || state.rawData.length < 3) {
+                alert('Selecciona tipo y asegúrate de tener 3+ puntos');
                 return;
             }
-            
-            if (state.rawData.length < 3) {
-                alert('Se necesitan al menos 3 puntos');
-                return;
-            }
-            
+
             const timeUnitValue = parseFloat(timeUnit.value);
             const xData = state.rawData.map(d => (d.time - state.timeZeroOffset) / timeUnitValue);
             const yData = state.rawData.map(d => d.value);
+
+            state.fitData = calculateFit(type, xData, yData);
             
-            try {
-                let result;
-                switch (type) {
-                    case 'linear':
-                        result = fitLinear(xData, yData);
-                        break;
-                    case 'quadratic':
-                        result = fitQuadratic(xData, yData);
-                        break;
-                    case 'exponential':
-                        result = fitExponential(xData, yData);
-                        break;
-                    case 'power':
-                        result = fitPower(xData, yData);
-                        break;
-                    case 'logarithmic':
-                        result = fitLogarithmic(xData, yData);
-                        break;
-                }
-                
-                if (result) {
-                    state.fitData = { type, params: result.params };
-                    displayFitResults(result);
-                    updateFitCurve();
-                }
-            } catch (err) {
-                console.error('Error en ajuste:', err);
-                alert('Error al calcular el ajuste: ' + err.message);
+            if (state.fitData) {
+                displayFitResults();
+                addFitCurve();
             }
         });
 
-        function fitLinear(x, y) {
+        function calculateFit(type, x, y) {
             const n = x.length;
-            const sumX = x.reduce((a, b) => a + b, 0);
-            const sumY = y.reduce((a, b) => a + b, 0);
-            const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-            const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
             
-            const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-            const b = (sumY - m * sumX) / n;
+            if (type === 'linear') {
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+                const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+                
+                const m = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+                const b = (sumY - m * sumX) / n;
+                
+                const r2 = calculateR2(x, y, xi => m * xi + b);
+                
+                return {
+                    type: 'linear',
+                    params: { m, b },
+                    equation: `y = ${m.toFixed(4)}x ${b >= 0 ? '+' : ''} ${b.toFixed(4)}`,
+                    r2: r2
+                };
+            } else if (type === 'quadratic') {
+                const result = polynomialFit(x, y, 2);
+                const [c, b, a] = result;
+                const r2 = calculateR2(x, y, xi => a * xi * xi + b * xi + c);
+                return {
+                    type: 'quadratic',
+                    params: { a, b, c },
+                    equation: `y = ${a.toFixed(4)}x² ${b >= 0 ? '+' : ''} ${b.toFixed(4)}x ${c >= 0 ? '+' : ''} ${c.toFixed(4)}`,
+                    r2: r2
+                };
+            } else if (type === 'exponential') {
+                const yPositive = y.every(yi => yi > 0);
+                if (!yPositive) {
+                    alert('Para ajuste exponencial, todos los valores Y deben ser positivos');
+                    return null;
+                }
+                const lnY = y.map(yi => Math.log(yi));
+                const sumX = x.reduce((a, b) => a + b, 0);
+                const sumLnY = lnY.reduce((a, b) => a + b, 0);
+                const sumXLnY = x.reduce((sum, xi, i) => sum + xi * lnY[i], 0);
+                const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+                const b = (n * sumXLnY - sumX * sumLnY) / (n * sumX2 - sumX * sumX);
+                const lnA = (sumLnY - b * sumX) / n;
+                const a = Math.exp(lnA);
+                const r2 = calculateR2(x, y, xi => a * Math.exp(b * xi));
+                return {
+                    type: 'exponential',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)}·e^(${b.toFixed(4)}x)`,
+                    r2: r2
+                };
+            } else if (type === 'power') {
+                const xPositive = x.every(xi => xi > 0);
+                const yPositive = y.every(yi => yi > 0);
+                if (!xPositive || !yPositive) {
+                    alert('Para ajuste potencial, todos los valores X e Y deben ser positivos');
+                    return null;
+                }
+                const lnX = x.map(xi => Math.log(xi));
+                const lnY = y.map(yi => Math.log(yi));
+                const sumLnX = lnX.reduce((a, b) => a + b, 0);
+                const sumLnY = lnY.reduce((a, b) => a + b, 0);
+                const sumLnXLnY = lnX.reduce((sum, lnXi, i) => sum + lnXi * lnY[i], 0);
+                const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
+                const b = (n * sumLnXLnY - sumLnX * sumLnY) / (n * sumLnX2 - sumLnX * sumLnX);
+                const lnA = (sumLnY - b * sumLnX) / n;
+                const a = Math.exp(lnA);
+                const r2 = calculateR2(x, y, xi => a * Math.pow(xi, b));
+                return {
+                    type: 'power',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)}·x^${b.toFixed(4)}`,
+                    r2: r2
+                };
+            } else if (type === 'logarithmic') {
+                const xPositive = x.every(xi => xi > 0);
+                if (!xPositive) {
+                    alert('Para ajuste logarítmico, todos los valores X deben ser positivos');
+                    return null;
+                }
+                const lnX = x.map(xi => Math.log(xi));
+                const sumLnX = lnX.reduce((a, b) => a + b, 0);
+                const sumY = y.reduce((a, b) => a + b, 0);
+                const sumLnXY = lnX.reduce((sum, lnXi, i) => sum + lnXi * y[i], 0);
+                const sumLnX2 = lnX.reduce((sum, lnXi) => sum + lnXi * lnXi, 0);
+                const a = (n * sumLnXY - sumLnX * sumY) / (n * sumLnX2 - sumLnX * sumLnX);
+                const b = (sumY - a * sumLnX) / n;
+                const r2 = calculateR2(x, y, xi => a * Math.log(xi) + b);
+                return {
+                    type: 'logarithmic',
+                    params: { a, b },
+                    equation: `y = ${a.toFixed(4)}·ln(x) ${b >= 0 ? '+' : ''} ${b.toFixed(4)}`,
+                    r2: r2
+                };
+            } else if (type === 'sinusoidal') {
+                // y = A·sin(B·x + C) + D
+                // Estimación inicial de parámetros
+                const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+                const yMin = Math.min(...y);
+                const yMax = Math.max(...y);
+                const amplitude = (yMax - yMin) / 2;
+                const offset = yMean;
+                
+                // Estimar frecuencia usando autocorrelación simple
+                let period = estimatePeriod(x, y);
+                
+                // Si el período es muy grande o pequeño, ajustar
+                if (period > (x[x.length - 1] - x[0])) {
+                    period = (x[x.length - 1] - x[0]) / 2;
+                }
+                
+                const frequency = (2 * Math.PI) / period;
+                
+                // Estimar fase inicial
+                const phase = estimatePhase(x, y, amplitude, frequency, offset);
+                
+                const A = amplitude;
+                const B = frequency;
+                const C = phase;
+                const D = offset;
+                
+                // Intentar refinar parámetros con optimización simple
+                const refined = refineSinusoidalFit(x, y, A, B, C, D);
+                
+                const r2 = calculateR2(x, y, xi => refined.A * Math.sin(refined.B * xi + refined.C) + refined.D);
+                
+                return {
+                    type: 'sinusoidal',
+                    params: { A: refined.A, B: refined.B, C: refined.C, D: refined.D },
+                    equation: `y = ${refined.A.toFixed(4)}·sin(${refined.B.toFixed(4)}·x ${refined.C >= 0 ? '+' : ''} ${refined.C.toFixed(4)}) ${refined.D >= 0 ? '+' : ''} ${refined.D.toFixed(4)}`,
+                    r2: r2
+                };
+            }
             
-            const yPred = x.map(xi => m * xi + b);
-            const r2 = calculateR2(y, yPred);
-            
-            return {
-                params: { m, b },
-                r2,
-                equation: `y = ${m.toFixed(4)}x + ${b.toFixed(4)}`
-            };
+            return null;
         }
 
-        function fitQuadratic(x, y) {
-            const n = x.length;
+        function estimatePeriod(x, y) {
+            // Estimación simple del período usando cruces por cero
+            const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+            const centered = y.map(yi => yi - yMean);
             
-            let sumX = 0, sumY = 0, sumX2 = 0, sumX3 = 0, sumX4 = 0;
-            let sumXY = 0, sumX2Y = 0;
+            let crossings = [];
+            for (let i = 1; i < centered.length; i++) {
+                if (centered[i-1] * centered[i] < 0) {
+                    crossings.push(x[i]);
+                }
+            }
+            
+            if (crossings.length < 2) {
+                // Si no hay suficientes cruces, usar rango completo
+                return (x[x.length - 1] - x[0]) / 2;
+            }
+            
+            // Promedio de distancias entre cruces (medio período)
+            let distances = [];
+            for (let i = 1; i < crossings.length; i++) {
+                distances.push(crossings[i] - crossings[i-1]);
+            }
+            
+            const avgHalfPeriod = distances.reduce((a, b) => a + b, 0) / distances.length;
+            return avgHalfPeriod * 2;
+        }
+
+        function estimatePhase(x, y, A, B, D) {
+            // Estimar fase usando el primer punto
+            if (x.length === 0) return 0;
+            
+            const y0 = y[0];
+            const x0 = x[0];
+            
+            // y0 = A·sin(B·x0 + C) + D
+            // sin(B·x0 + C) = (y0 - D) / A
+            
+            if (Math.abs(A) < 0.0001) return 0;
+            
+            const sinValue = (y0 - D) / A;
+            const clampedSin = Math.max(-1, Math.min(1, sinValue));
+            
+            return Math.asin(clampedSin) - B * x0;
+        }
+
+        function refineSinusoidalFit(x, y, A0, B0, C0, D0) {
+            // Optimización simple por descenso de gradiente
+            let A = A0, B = B0, C = C0, D = D0;
+            const learningRate = 0.001;
+            const iterations = 100;
+            
+            for (let iter = 0; iter < iterations; iter++) {
+                let gradA = 0, gradB = 0, gradC = 0, gradD = 0;
+                
+                for (let i = 0; i < x.length; i++) {
+                    const xi = x[i];
+                    const yi = y[i];
+                    const predicted = A * Math.sin(B * xi + C) + D;
+                    const error = predicted - yi;
+                    
+                    // Gradientes
+                    gradA += error * Math.sin(B * xi + C);
+                    gradB += error * A * xi * Math.cos(B * xi + C);
+                    gradC += error * A * Math.cos(B * xi + C);
+                    gradD += error;
+                }
+                
+                // Actualizar parámetros
+                A -= learningRate * gradA / x.length;
+                B -= learningRate * gradB / x.length;
+                C -= learningRate * gradC / x.length;
+                D -= learningRate * gradD / x.length;
+            }
+            
+            return { A, B, C, D };
+        }
+
+        function polynomialFit(x, y, degree) {
+            const n = x.length;
+            const matrix = [];
+            const result = [];
+            
+            for (let i = 0; i <= degree; i++) {
+                const row = [];
+                for (let j = 0; j <= degree; j++) {
+                    let sum = 0;
+                    for (let k = 0; k < n; k++) {
+                        sum += Math.pow(x[k], i + j);
+                    }
+                    row.push(sum);
+                }
+                matrix.push(row);
+                
+                let sum = 0;
+                for (let k = 0; k < n; k++) {
+                    sum += y[k] * Math.pow(x[k], i);
+                }
+                result.push(sum);
+            }
+            
+            return gaussElimination(matrix, result);
+        }
+
+        function gaussElimination(matrix, result) {
+            const n = matrix.length;
+            const augmented = matrix.map((row, i) => [...row, result[i]]);
             
             for (let i = 0; i < n; i++) {
-                const xi = x[i];
-                const yi = y[i];
-                sumX += xi;
-                sumY += yi;
-                sumX2 += xi * xi;
-                sumX3 += xi * xi * xi;
-                sumX4 += xi * xi * xi * xi;
-                sumXY += xi * yi;
-                sumX2Y += xi * xi * yi;
+                let maxRow = i;
+                for (let k = i + 1; k < n; k++) {
+                    if (Math.abs(augmented[k][i]) > Math.abs(augmented[maxRow][i])) {
+                        maxRow = k;
+                    }
+                }
+                [augmented[i], augmented[maxRow]] = [augmented[maxRow], augmented[i]];
+                
+                for (let k = i + 1; k < n; k++) {
+                    const factor = augmented[k][i] / augmented[i][i];
+                    for (let j = i; j <= n; j++) {
+                        augmented[k][j] -= factor * augmented[i][j];
+                    }
+                }
             }
             
-            const denom = n * sumX2 * sumX4 + 2 * sumX * sumX2 * sumX3 
-                        - sumX2 * sumX2 * sumX2 - n * sumX3 * sumX3 - sumX * sumX * sumX4;
-            
-            if (Math.abs(denom) < 1e-10) {
-                throw new Error('Sistema singular, no se puede calcular ajuste cuadrático');
+            const solution = new Array(n);
+            for (let i = n - 1; i >= 0; i--) {
+                solution[i] = augmented[i][n];
+                for (let j = i + 1; j < n; j++) {
+                    solution[i] -= augmented[i][j] * solution[j];
+                }
+                solution[i] /= augmented[i][i];
             }
             
-            const a = (n * sumX2 * sumX2Y + sumX * sumX3 * sumY + sumX * sumX2 * sumXY
-                     - sumX2 * sumX2 * sumY - n * sumX3 * sumXY - sumX * sumX * sumX2Y) / denom;
-            
-            const b = (n * sumX4 * sumXY + sumX * sumX2 * sumX2Y + sumX2 * sumX3 * sumY
-                     - sumX2 * sumX2 * sumXY - n * sumX3 * sumX2Y - sumX * sumX4 * sumY) / denom;
-            
-            const c = (sumX2 * sumX4 * sumY + sumX * sumX3 * sumXY + sumX2 * sumX2 * sumX2Y
-                     - sumX2 * sumX2 * sumX2Y - sumX * sumX4 * sumXY - sumX2 * sumX3 * sumY) / denom;
-            
-            const yPred = x.map(xi => a * xi * xi + b * xi + c);
-            const r2 = calculateR2(y, yPred);
-            
-            return {
-                params: { a, b, c },
-                r2,
-                equation: `y = ${a.toFixed(4)}x² + ${b.toFixed(4)}x + ${c.toFixed(4)}`
-            };
+            return solution;
         }
 
-        function fitExponential(x, y) {
-            if (y.some(yi => yi <= 0)) {
-                throw new Error('El ajuste exponencial requiere valores Y positivos');
+        function calculateR2(x, y, fitFunction) {
+            const yMean = y.reduce((a, b) => a + b, 0) / y.length;
+            let ssRes = 0;
+            let ssTot = 0;
+            
+            for (let i = 0; i < x.length; i++) {
+                const yFit = fitFunction(x[i]);
+                ssRes += Math.pow(y[i] - yFit, 2);
+                ssTot += Math.pow(y[i] - yMean, 2);
             }
             
-            const lnY = y.map(yi => Math.log(yi));
-            const linearFit = fitLinear(x, lnY);
-            
-            const a = Math.exp(linearFit.params.b);
-            const b = linearFit.params.m;
-            
-            const yPred = x.map(xi => a * Math.exp(b * xi));
-            const r2 = calculateR2(y, yPred);
-            
-            return {
-                params: { a, b },
-                r2,
-                equation: `y = ${a.toFixed(4)}e^(${b.toFixed(4)}x)`
-            };
-        }
-
-        function fitPower(x, y) {
-            if (x.some(xi => xi <= 0) || y.some(yi => yi <= 0)) {
-                throw new Error('El ajuste potencial requiere valores X e Y positivos');
-            }
-            
-            const lnX = x.map(xi => Math.log(xi));
-            const lnY = y.map(yi => Math.log(yi));
-            const linearFit = fitLinear(lnX, lnY);
-            
-            const a = Math.exp(linearFit.params.b);
-            const b = linearFit.params.m;
-            
-            const yPred = x.map(xi => a * Math.pow(xi, b));
-            const r2 = calculateR2(y, yPred);
-            
-            return {
-                params: { a, b },
-                r2,
-                equation: `y = ${a.toFixed(4)}x^${b.toFixed(4)}`
-            };
-        }
-
-        function fitLogarithmic(x, y) {
-            if (x.some(xi => xi <= 0)) {
-                throw new Error('El ajuste logarítmico requiere valores X positivos');
-            }
-            
-            const lnX = x.map(xi => Math.log(xi));
-            const linearFit = fitLinear(lnX, y);
-            
-            const a = linearFit.params.m;
-            const b = linearFit.params.b;
-            
-            const yPred = x.map(xi => a * Math.log(xi) + b);
-            const r2 = calculateR2(y, yPred);
-            
-            return {
-                params: { a, b },
-                r2,
-                equation: `y = ${a.toFixed(4)}ln(x) + ${b.toFixed(4)}`
-            };
-        }
-
-        function calculateR2(yActual, yPred) {
-            const yMean = yActual.reduce((a, b) => a + b, 0) / yActual.length;
-            const ssRes = yActual.reduce((sum, yi, i) => sum + Math.pow(yi - yPred[i], 2), 0);
-            const ssTot = yActual.reduce((sum, yi) => sum + Math.pow(yi - yMean, 2), 0);
             return 1 - (ssRes / ssTot);
         }
 
-        function displayFitResults(result) {
-            let html = `
+        function displayFitResults() {
+            const quality = state.fitData.r2 > 0.95 ? 'EXCELENTE' : state.fitData.r2 > 0.85 ? 'BUENO' : state.fitData.r2 > 0.70 ? 'ACEPTABLE' : 'POBRE';
+            
+            let explanation = '';
+            switch (state.fitData.type) {
+                case 'linear':
+                    explanation = 'm = pendiente, b = intercepto';
+                    break;
+                case 'quadratic':
+                    explanation = 'a = curvatura, b = pendiente, c = intercepto';
+                    break;
+                case 'exponential':
+                    explanation = 'a = escala, b = tasa de crecimiento';
+                    break;
+                case 'power':
+                    explanation = 'a = escala, b = exponente';
+                    break;
+                case 'logarithmic':
+                    explanation = 'a = escala, b = desplazamiento';
+                    break;
+                case 'sinusoidal':
+                    explanation = `A = amplitud, B = frecuencia (período ≈ ${(2*Math.PI/state.fitData.params.B).toFixed(2)}), C = fase, D = offset`;
+                    break;
+            }
+            
+            fitResults.innerHTML = `
                 <div class="fit-box">
-                    <div class="title">RESULTADOS</div>
-                    <div class="value">
-                        <strong>Ecuación:</strong><br>
-                        ${result.equation}<br><br>
-                        <strong>R²:</strong> ${result.r2.toFixed(6)}
+                    <div class="title">ECUACIÓN DEL AJUSTE</div>
+                    <div class="equation">${state.fitData.equation}</div>
+                    <div class="stats">
+                        R² = ${state.fitData.r2.toFixed(6)}<br>
+                        CALIDAD: ${quality}<br>
+                        <br>
+                        ${explanation}
                     </div>
                 </div>
             `;
-            fitResults.innerHTML = html;
         }
 
-        function updateFitCurve() {
-            if (!state.fitData || state.rawData.length === 0) return;
-            
-            if (chart.data.datasets.length === 1) {
-                chart.data.datasets.push({
-                    label: 'Ajuste',
-                    data: [],
-                    borderColor: 'rgba(0, 0, 0, 1)',
-                    backgroundColor: 'transparent',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    showLine: true,
-                    type: 'line'
-                });
+        function addFitCurve() {
+            if (chart.data.datasets.length > 1) {
+                chart.data.datasets.pop();
             }
             
             const timeUnitValue = parseFloat(timeUnit.value);
             const xData = state.rawData.map(d => (d.time - state.timeZeroOffset) / timeUnitValue);
+            
+            if (xData.length === 0) return;
             
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
             
-            const numPoints = 300;
+            // Para sinusoidal, usar MUCHOS más puntos
+            const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
             const step = (xMax - xMin) / numPoints;
             
-            const fitData = [];
+            const fitXValues = [];
+            const fitYValues = [];
+            
+            for (let i = 0; i <= numPoints; i++) {
+                const x = xMin + i * step;
+                const y = evaluateFit(state.fitData, x);
+                
+                // Solo agregar puntos válidos
+                if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
+                    fitXValues.push(x);
+                    fitYValues.push(y);
+                }
+            }
+            
+            console.log('Ajuste agregado:', fitYValues.length, 'puntos');
+            console.log('Tipo:', state.fitData.type);
+            console.log('Muestra de Y:', fitYValues.slice(0, 10));
+            
+            // Si no tenemos suficientes puntos válidos
+            if (fitYValues.length < 10) {
+                alert('No se puede graficar el ajuste en este rango de datos');
+                return;
+            }
+            
+            // Crear labels que coincidan con los datos originales
+            const fitLabels = fitXValues.map(x => x.toFixed(3));
+            
+            // Dataset de ajuste con LABELS PROPIOS
+            chart.data.datasets.push({
+                label: 'Ajuste teórico',
+                data: fitYValues,
+                borderColor: '#666',
+                backgroundColor: 'transparent',
+                borderWidth: 2,
+                borderDash: [5, 5],
+                pointRadius: 0,
+                tension: 0.4,
+                spanGaps: true,
+                parsing: false  // Importante: usar data como está
+            });
+            
+            // Actualizar con 'default' para recalcular escalas
+            chart.update('default');
+        }
+
+        function updateFitCurve(displayData) {
+            if (!state.fitData || chart.data.datasets.length < 2) return;
+            
+            const xData = displayData.map(d => d.adjustedTime);
+            
+            if (xData.length === 0) return;
+            
+            const xMin = Math.min(...xData);
+            const xMax = Math.max(...xData);
+            
+            const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
+            const step = (xMax - xMin) / numPoints;
+            
+            const fitYValues = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
                 
                 if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
-                    fitData.push({ x, y });
+                    fitYValues.push(y);
                 }
             }
             
-            if (fitData.length >= 10) {
-                chart.data.datasets[1].data = fitData;
-                chart.update();
+            if (fitYValues.length >= 10) {
+                chart.data.datasets[1].data = fitYValues;
             }
         }
 
@@ -1248,17 +1830,18 @@
                         result = fit.params.a * Math.exp(fit.params.b * x);
                         break;
                     case 'power':
-                        if (x <= 0) return NaN;
+                        if (x <= 0) return NaN; // Potencial requiere x > 0
                         result = fit.params.a * Math.pow(x, fit.params.b);
                         break;
                     case 'logarithmic':
-                        if (x <= 0) return NaN;
+                        if (x <= 0) return NaN; // Logaritmo requiere x > 0
                         result = fit.params.a * Math.log(x) + fit.params.b;
                         break;
                     default:
                         return 0;
                 }
                 
+                // Verificar que el resultado sea válido
                 if (!isFinite(result) || Math.abs(result) > 1e10) {
                     return NaN;
                 }
@@ -1329,15 +1912,19 @@
             document.getElementById('helpModal').classList.remove('active');
         }
 
+        // Botón de ayuda
         helpBtn.addEventListener('click', () => {
             document.getElementById('helpModal').classList.add('active');
         });
 
+        // Exportar CSV con formato de dos columnas
         exportBtn.addEventListener('click', () => {
             const timeUnitValue = parseFloat(timeUnit.value);
             
+            // Header con nombres de columnas
             const header = `${xAxisLabel.value},${yAxisLabel.value}`;
             
+            // Datos en dos columnas separadas por coma
             const dataRows = state.rawData.map(d => {
                 const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
                 return `${adjustedTime.toFixed(6)},${d.value.toFixed(6)}`;
@@ -1350,6 +1937,7 @@
             const a = document.createElement('a');
             a.href = url;
             
+            // Nombre de archivo con timestamp
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
             a.download = `microbit_data_${timestamp}.csv`;
             
@@ -1395,8 +1983,8 @@
             if (points.length > 0) {
                 const point = points[0];
                 const dataIndex = point.index;
-                const xValue = chart.data.datasets[0].data[dataIndex].x;
-                const yValue = chart.data.datasets[0].data[dataIndex].y;
+                const xValue = chart.data.labels[dataIndex];
+                const yValue = chart.data.datasets[0].data[dataIndex];
                 
                 const examineLine = document.getElementById('examineLine');
                 const examineLabel = document.getElementById('examineLabel');
@@ -1409,7 +1997,7 @@
                 examineLabel.style.display = 'block';
                 examineLabel.style.left = (x + 10) + 'px';
                 examineLabel.style.top = (y - 40) + 'px';
-                examineLabel.innerHTML = `X: ${xValue.toFixed(4)}<br>Y: ${yValue.toFixed(4)}`;
+                examineLabel.innerHTML = `X: ${xValue}<br>Y: ${yValue.toFixed(4)}`;
             }
         }
 
@@ -1419,7 +2007,7 @@
 
         function toggleSection(header) {
             const content = header.nextElementSibling;
-            const arrow = header.querySelector('span:last-child');
+            const arrow = header.querySelector('span');
             
             if (content.classList.contains('collapsed')) {
                 content.classList.remove('collapsed');
@@ -1453,6 +2041,74 @@
         document.getElementById('helpModal').addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 closeHelpModal();
+            }
+        });
+
+        // ========== DEPURACIÓN DE DATOS ==========
+
+        // Eliminar datos por rango
+        deleteRangeBtn.addEventListener('click', () => {
+            const start = parseInt(rangeStart.value);
+            const end = parseInt(rangeEnd.value);
+            
+            if (isNaN(start) || isNaN(end)) {
+                alert('Por favor ingresa valores válidos para el rango');
+                return;
+            }
+            
+            if (start < 1 || end < 1) {
+                alert('Los números de punto deben ser mayores a 0');
+                return;
+            }
+            
+            if (start > end) {
+                alert('El punto inicial debe ser menor o igual al punto final');
+                return;
+            }
+            
+            if (start > state.rawData.length || end > state.rawData.length) {
+                alert(`Los puntos deben estar entre 1 y ${state.rawData.length}`);
+                return;
+            }
+            
+            const deleteCount = end - start + 1;
+            
+            if (confirm(`¿Eliminar ${deleteCount} punto(s) desde el punto #${start} hasta el #${end}?`)) {
+                // Obtener los IDs de los puntos a eliminar (índices comienzan en 0)
+                const idsToDelete = new Set();
+                for (let i = start - 1; i < end; i++) {
+                    if (state.rawData[i]) {
+                        idsToDelete.add(state.rawData[i].id);
+                    }
+                }
+                
+                // Filtrar los datos
+                state.rawData = state.rawData.filter(d => !idsToDelete.has(d.id));
+                
+                // Limpiar de seleccionados también
+                idsToDelete.forEach(id => state.selectedPoints.delete(id));
+                
+                updateDisplay();
+                alert(`Se eliminaron ${deleteCount} punto(s)`);
+            }
+        });
+
+        // Eliminar puntos seleccionados desde la gráfica
+        deleteSelectedGraphBtn.addEventListener('click', () => {
+            if (state.selectedPoints.size === 0) {
+                alert('No hay puntos seleccionados. Haz clic en puntos de la gráfica para seleccionarlos.');
+                return;
+            }
+            
+            const count = state.selectedPoints.size;
+            
+            if (confirm(`¿Eliminar ${count} punto(s) seleccionado(s)?`)) {
+                // Eliminar puntos seleccionados
+                state.rawData = state.rawData.filter(d => !state.selectedPoints.has(d.id));
+                state.selectedPoints.clear();
+                updateDisplay();
+                
+                alert(`Se eliminaron ${count} punto(s)`);
             }
         });
     </script>
