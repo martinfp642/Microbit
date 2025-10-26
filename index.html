@@ -1728,54 +1728,53 @@ while True:
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
             
-            // Para sinusoidal, usar muchos más puntos para capturar la oscilación
-            const numPoints = state.fitData.type === 'sinusoidal' ? 500 : 200;
+            // Para sinusoidal, usar MUCHOS más puntos
+            const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
             const step = (xMax - xMin) / numPoints;
             
-            const fitPoints = [];
-            const fitLabels = [];
+            const fitXValues = [];
+            const fitYValues = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
                 
                 // Solo agregar puntos válidos
-                if (!isNaN(y) && isFinite(y)) {
-                    fitPoints.push(y);
-                    fitLabels.push(x.toFixed(3));
-                } else {
-                    // Para funciones continuas, podemos seguir
-                    if (state.fitData.type === 'sinusoidal' || 
-                        state.fitData.type === 'linear' || 
-                        state.fitData.type === 'quadratic') {
-                        continue;
-                    }
-                    break;
+                if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
+                    fitXValues.push(x);
+                    fitYValues.push(y);
                 }
             }
             
-            // Si no tenemos suficientes puntos válidos, no mostrar la curva
-            if (fitPoints.length < 10) {
+            console.log('Ajuste agregado:', fitYValues.length, 'puntos');
+            console.log('Tipo:', state.fitData.type);
+            console.log('Muestra de Y:', fitYValues.slice(0, 10));
+            
+            // Si no tenemos suficientes puntos válidos
+            if (fitYValues.length < 10) {
                 alert('No se puede graficar el ajuste en este rango de datos');
                 return;
             }
             
-            // Para sinusoidal, usar más tensión para curva suave
-            const tension = state.fitData.type === 'sinusoidal' ? 0.4 : 0.4;
+            // Crear labels que coincidan con los datos originales
+            const fitLabels = fitXValues.map(x => x.toFixed(3));
             
+            // Dataset de ajuste con LABELS PROPIOS
             chart.data.datasets.push({
                 label: 'Ajuste teórico',
-                data: fitPoints,
+                data: fitYValues,
                 borderColor: '#666',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
                 borderDash: [5, 5],
                 pointRadius: 0,
-                tension: tension,
-                spanGaps: false
+                tension: 0.4,
+                spanGaps: true,
+                parsing: false  // Importante: usar data como está
             });
             
-            chart.update();
+            // Actualizar con 'default' para recalcular escalas
+            chart.update('default');
         }
 
         function updateFitCurve(displayData) {
@@ -1788,29 +1787,22 @@ while True:
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
             
-            const numPoints = state.fitData.type === 'sinusoidal' ? 500 : 200;
+            const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
             const step = (xMax - xMin) / numPoints;
             
-            const fitPoints = [];
+            const fitYValues = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
                 
-                if (!isNaN(y) && isFinite(y)) {
-                    fitPoints.push(y);
-                } else {
-                    if (state.fitData.type === 'sinusoidal' || 
-                        state.fitData.type === 'linear' || 
-                        state.fitData.type === 'quadratic') {
-                        continue;
-                    }
-                    break;
+                if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
+                    fitYValues.push(y);
                 }
             }
             
-            if (fitPoints.length >= 10) {
-                chart.data.datasets[1].data = fitPoints;
+            if (fitYValues.length >= 10) {
+                chart.data.datasets[1].data = fitYValues;
             }
         }
 
