@@ -1722,20 +1722,53 @@ while True:
             document.getElementById('helpModal').classList.add('active');
         });
 
+        // Exportar CSV con formato de dos columnas
         exportBtn.addEventListener('click', () => {
             const timeUnitValue = parseFloat(timeUnit.value);
-            const csv = `${xAxisLabel.value},${yAxisLabel.value}\n` + 
-                state.rawData.map(d => {
-                    const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
-                    return `${adjustedTime},${d.value}`;
-                }).join('\n');
             
-            const blob = new Blob([csv], { type: 'text/csv' });
+            // Header con nombres de columnas
+            const header = `${xAxisLabel.value},${yAxisLabel.value}`;
+            
+            // Datos en dos columnas separadas por coma
+            const dataRows = state.rawData.map(d => {
+                const adjustedTime = (d.time - state.timeZeroOffset) / timeUnitValue;
+                return `${adjustedTime.toFixed(6)},${d.value.toFixed(6)}`;
+            }).join('\n');
+            
+            const csv = header + '\n' + dataRows;
+            
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'microbit_data.csv';
+            
+            // Nombre de archivo con timestamp
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            a.download = `microbit_data_${timestamp}.csv`;
+            
             a.click();
+            URL.revokeObjectURL(url);
+        });
+
+        // Exportar video
+        exportVideoBtn.addEventListener('click', () => {
+            if (!state.videoBlob) {
+                alert('No hay video grabado para exportar');
+                return;
+            }
+            
+            const url = URL.createObjectURL(state.videoBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // Nombre de archivo con timestamp
+            const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            a.download = `microbit_video_${timestamp}.webm`;
+            
+            a.click();
+            
+            // Limpiar URL después de un tiempo
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
         });
 
         clearBtn.addEventListener('click', () => {
