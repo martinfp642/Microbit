@@ -1319,6 +1319,8 @@ while True:
                     state.timeZeroOffset = point.time;
                     updateDisplay();
                 }
+            } else if (state.selectedPoints.size > 1) {
+                alert('Selecciona solo UN punto para establecer como tiempo cero');
             }
         });
 
