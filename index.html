@@ -100,6 +100,12 @@
             flex: 1;
             position: relative;
             min-height: 400px;
+            cursor: crosshair;
+        }
+        
+        .chart-container canvas {
+            position: relative;
+            z-index: 1;
         }
         
         /* Panel lateral */
@@ -287,10 +293,11 @@
         /* Selección de área */
         .selection-box {
             position: absolute;
-            border: 2px solid black;
-            background: rgba(0, 0, 0, 0.1);
+            border: 3px solid black;
+            background: rgba(0, 0, 0, 0.15);
             pointer-events: none;
             display: none;
+            z-index: 10;
         }
         
         /* Stats modal */
@@ -972,13 +979,10 @@ while True:
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                onClick: (evt) => {
-                    // Solo procesar clicks si no estamos seleccionando área
-                    if (!state.isSelecting) {
-                        handleChartClick(evt);
-                    }
+                interaction: {
+                    mode: 'nearest',
+                    intersect: true
                 },
-                onHover: handleChartHover,
                 plugins: {
                     legend: { display: false },
                     tooltip: { enabled: false }
@@ -1453,6 +1457,12 @@ while True:
                 
                 // Estimar frecuencia usando autocorrelación simple
                 let period = estimatePeriod(x, y);
+                
+                // Si el período es muy grande o pequeño, ajustar
+                if (period > (x[x.length - 1] - x[0])) {
+                    period = (x[x.length - 1] - x[0]) / 2;
+                }
+                
                 const frequency = (2 * Math.PI) / period;
                 
                 // Estimar fase inicial
@@ -1463,12 +1473,15 @@ while True:
                 const C = phase;
                 const D = offset;
                 
-                const r2 = calculateR2(x, y, xi => A * Math.sin(B * xi + C) + D);
+                // Intentar refinar parámetros con optimización simple
+                const refined = refineSinusoidalFit(x, y, A, B, C, D);
+                
+                const r2 = calculateR2(x, y, xi => refined.A * Math.sin(refined.B * xi + refined.C) + refined.D);
                 
                 return {
                     type: 'sinusoidal',
-                    params: { A, B, C, D },
-                    equation: `y = ${A.toFixed(4)}·sin(${B.toFixed(4)}·x ${C >= 0 ? '+' : ''} ${C.toFixed(4)}) ${D >= 0 ? '+' : ''} ${D.toFixed(4)}`,
+                    params: { A: refined.A, B: refined.B, C: refined.C, D: refined.D },
+                    equation: `y = ${refined.A.toFixed(4)}·sin(${refined.B.toFixed(4)}·x ${refined.C >= 0 ? '+' : ''} ${refined.C.toFixed(4)}) ${refined.D >= 0 ? '+' : ''} ${refined.D.toFixed(4)}`,
                     r2: r2
                 };
             }
@@ -1519,6 +1532,38 @@ while True:
             const clampedSin = Math.max(-1, Math.min(1, sinValue));
             
             return Math.asin(clampedSin) - B * x0;
+        }
+
+        function refineSinusoidalFit(x, y, A0, B0, C0, D0) {
+            // Optimización simple por descenso de gradiente
+            let A = A0, B = B0, C = C0, D = D0;
+            const learningRate = 0.001;
+            const iterations = 100;
+            
+            for (let iter = 0; iter < iterations; iter++) {
+                let gradA = 0, gradB = 0, gradC = 0, gradD = 0;
+                
+                for (let i = 0; i < x.length; i++) {
+                    const xi = x[i];
+                    const yi = y[i];
+                    const predicted = A * Math.sin(B * xi + C) + D;
+                    const error = predicted - yi;
+                    
+                    // Gradientes
+                    gradA += error * Math.sin(B * xi + C);
+                    gradB += error * A * xi * Math.cos(B * xi + C);
+                    gradC += error * A * Math.cos(B * xi + C);
+                    gradD += error;
+                }
+                
+                // Actualizar parámetros
+                A -= learningRate * gradA / x.length;
+                B -= learningRate * gradB / x.length;
+                C -= learningRate * gradC / x.length;
+                D -= learningRate * gradD / x.length;
+            }
+            
+            return { A, B, C, D };
         }
 
         function polynomialFit(x, y, degree) {
