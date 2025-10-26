@@ -328,6 +328,97 @@
             width: 100%;
         }
         
+        /* Help/Tutorial modal */
+        .help-modal {
+            max-width: 800px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .help-section {
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+        
+        .help-section:last-child {
+            border-bottom: none;
+        }
+        
+        .help-section h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .help-section p {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .help-section ul {
+            margin-left: 20px;
+            margin-bottom: 12px;
+        }
+        
+        .help-section li {
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        
+        .code-block {
+            background: #f5f5f5;
+            border: 2px solid black;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            white-space: pre;
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: black;
+            color: white;
+            width: 24px;
+            height: 24px;
+            line-height: 24px;
+            text-align: center;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-right: 8px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        
+        .feature-icon {
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-right: 12px;
+            min-width: 24px;
+        }
+        
+        .feature-text {
+            flex: 1;
+        }
+        
+        .feature-text strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+        
         /* Video modal */
         .video-modal {
             max-width: 900px;
@@ -425,6 +516,10 @@
         
         <button id="exportBtn" class="toolbar-btn" disabled>EXPORTAR</button>
         <button id="clearBtn" class="toolbar-btn">LIMPIAR</button>
+        
+        <div class="toolbar-separator"></div>
+        
+        <button id="helpBtn" class="toolbar-btn">?</button>
         
         <span class="status-text" id="statusText">DESCONECTADO</span>
     </div>
@@ -564,6 +659,222 @@
         </div>
     </div>
 
+    <!-- Modal de ayuda/tutorial -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content help-modal">
+            <div class="modal-header">TUTORIAL Y GUÍA DE USO</div>
+            
+            <div class="help-section">
+                <h3>📋 COMPONENTES DEL SISTEMA</h3>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">●</div>
+                    <div class="feature-text">
+                        <strong>CONECTAR</strong>
+                        Establece conexión serial con la micro:bit vía USB. Usa Web Serial API del navegador.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">▶</div>
+                    <div class="feature-text">
+                        <strong>CAPTURAR / DETENER</strong>
+                        Inicia y detiene la captura de datos en tiempo real. Si la cámara está activa, también graba video sincronizado.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📹</div>
+                    <div class="feature-text">
+                        <strong>CÁMARA</strong>
+                        Activa la webcam para grabar video del experimento. El video se sincroniza automáticamente con los datos capturados.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">⊕</div>
+                    <div class="feature-text">
+                        <strong>EXAMINE</strong>
+                        Herramienta para inspeccionar puntos en la gráfica. Pasa el mouse sobre la gráfica para ver coordenadas exactas.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">Σ</div>
+                    <div class="feature-text">
+                        <strong>ESTADÍSTICAS</strong>
+                        Calcula media, mínimo, máximo, desviación estándar y número total de puntos.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">
+                        <strong>AJUSTE DE CURVA</strong>
+                        Aplica ajustes por mínimos cuadrados: lineal, cuadrático, exponencial, potencial y logarítmico.
+                    </div>
+                </div>
+                
+                <div class="feature-item">
+                    <div class="feature-icon">💾</div>
+                    <div class="feature-text">
+                        <strong>EXPORTAR</strong>
+                        Descarga los datos en formato CSV para análisis posterior en Excel, Python, etc.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="help-section">
+                <h3>🚀 FLUJO DE TRABAJO</h3>
+                <p><span class="step-number">1</span> Conecta tu micro:bit por USB a la computadora</p>
+                <p><span class="step-number">2</span> Haz clic en <strong>CONECTAR</strong> y selecciona el puerto USB</p>
+                <p><span class="step-number">3</span> (Opcional) Activa la <strong>CÁMARA</strong> para grabar video</p>
+                <p><span class="step-number">4</span> Haz clic en <strong>CAPTURAR</strong> para iniciar</p>
+                <p><span class="step-number">5</span> Realiza tu experimento</p>
+                <p><span class="step-number">6</span> Haz clic en <strong>DETENER</strong> cuando termines</p>
+                <p><span class="step-number">7</span> Analiza los datos:</p>
+                <ul>
+                    <li>Click en puntos para seleccionar</li>
+                    <li>Botón ▶ en tabla para ver video en ese momento</li>
+                    <li>Configura ejes y establece tiempo cero</li>
+                    <li>Calcula ajustes de curva</li>
+                    <li>Exporta resultados</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>💻 CÓDIGO PARA MICRO:BIT</h3>
+                <p>Tu micro:bit debe enviar datos por serial. Aquí tienes ejemplos básicos:</p>
+                
+                <strong>JavaScript (MakeCode):</strong>
+                <div class="code-block">
+                    <pre>// Enviar valor del acelerómetro
+basic.forever(function () {
+    serial.writeNumber(input.acceleration(Dimension.X))
+    serial.writeLine("")
+    basic.pause(100)  // 100ms = 10 datos/segundo
+})</pre>
+                </div>
+                
+                <strong>Python (MicroPython):</strong>
+                <div class="code-block">
+                    <pre># Enviar valor de temperatura
+from microbit import *
+
+while True:
+    valor = temperature()
+    print(valor)
+    sleep(100)</pre>
+                </div>
+                
+                <p><strong>⚠️ IMPORTANTE:</strong></p>
+                <ul>
+                    <li>Envía <strong>SOLO EL NÚMERO</strong>, sin texto adicional</li>
+                    <li>Usa <code>serial.writeNumber()</code> en JavaScript o <code>print()</code> en Python</li>
+                    <li>Termina cada valor con salto de línea (<code>serial.writeLine("")</code> o automático con <code>print()</code>)</li>
+                    <li>Ajusta <code>basic.pause()</code> o <code>sleep()</code> según la frecuencia deseada</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>📹 VIDEO SINCRONIZADO</h3>
+                <p>El sistema graba video del experimento y lo sincroniza con los datos:</p>
+                <ul>
+                    <li>Activa la cámara <strong>ANTES</strong> de capturar datos</li>
+                    <li>Al hacer clic en <strong>CAPTURAR</strong>, inicia video + datos simultáneamente</li>
+                    <li>Cada dato tiene un timestamp asociado al video</li>
+                    <li>Click en botón <strong>▶</strong> en la tabla para ver ese momento exacto</li>
+                    <li>El video se reproduce desde el instante del punto seleccionado</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>🎯 EJEMPLOS DE SENSORES</h3>
+                
+                <strong>Acelerómetro (X, Y o Z):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.acceleration(Dimension.X))
+    serial.writeLine("")
+    basic.pause(50)
+})</pre>
+                </div>
+                
+                <strong>Nivel de luz:</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.lightLevel())
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+                
+                <strong>Brújula (orientación):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    serial.writeNumber(input.compassHeading())
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+                
+                <strong>Sensor analógico (Pin P0):</strong>
+                <div class="code-block">
+                    <pre>basic.forever(function () {
+    let valor = pins.analogReadPin(AnalogPin.P0)
+    serial.writeNumber(valor)
+    serial.writeLine("")
+    basic.pause(100)
+})</pre>
+                </div>
+            </div>
+            
+            <div class="help-section">
+                <h3>⚙️ REQUISITOS DEL SISTEMA</h3>
+                <ul>
+                    <li><strong>Navegador:</strong> Chrome, Edge u Opera (con Web Serial API)</li>
+                    <li><strong>Sistema:</strong> Windows, macOS o Linux</li>
+                    <li><strong>Hardware:</strong> micro:bit v1 o v2 con cable USB</li>
+                    <li><strong>Webcam:</strong> Opcional, para grabación de video</li>
+                    <li><strong>Conexión:</strong> No requiere internet una vez cargada la página</li>
+                </ul>
+            </div>
+            
+            <div class="help-section">
+                <h3>❓ SOLUCIÓN DE PROBLEMAS</h3>
+                
+                <p><strong>No aparece el puerto al conectar:</strong></p>
+                <ul>
+                    <li>Verifica que el cable USB esté bien conectado</li>
+                    <li>Prueba con otro puerto USB</li>
+                    <li>Reinicia el navegador</li>
+                </ul>
+                
+                <p><strong>No llegan datos:</strong></p>
+                <ul>
+                    <li>Asegúrate de que el código esté corriendo en la micro:bit</li>
+                    <li>Verifica que uses <code>serial.writeNumber()</code> + <code>serial.writeLine("")</code></li>
+                    <li>No envíes texto, solo números</li>
+                </ul>
+                
+                <p><strong>La cámara no funciona:</strong></p>
+                <ul>
+                    <li>Permite el acceso a la cámara cuando el navegador lo solicite</li>
+                    <li>Verifica que otra aplicación no esté usando la cámara</li>
+                    <li>Prueba en modo incógnito del navegador</li>
+                </ul>
+                
+                <p><strong>El video y los datos no coinciden:</strong></p>
+                <ul>
+                    <li>Activa la cámara ANTES de capturar datos</li>
+                    <li>Ambos deben iniciar con el mismo botón CAPTURAR</li>
+                </ul>
+            </div>
+            
+            <button class="toolbar-btn primary modal-close" onclick="closeHelpModal()">CERRAR</button>
+        </div>
+    </div>
+
     <script>
         // Estado
         let state = {
@@ -611,6 +922,7 @@
         const stopCameraBtn = document.getElementById('stopCameraBtn');
         const playbackVideo = document.getElementById('playbackVideo');
         const videoInfo = document.getElementById('videoInfo');
+        const helpBtn = document.getElementById('helpBtn');
 
         if (!('serial' in navigator)) {
             alert('Web Serial API no soportada. Usa Chrome, Edge u Opera.');
@@ -1328,6 +1640,15 @@
             playbackVideo.src = '';
         }
 
+        function closeHelpModal() {
+            document.getElementById('helpModal').classList.remove('active');
+        }
+
+        // Botón de ayuda
+        helpBtn.addEventListener('click', () => {
+            document.getElementById('helpModal').classList.add('active');
+        });
+
         exportBtn.addEventListener('click', () => {
             const timeUnitValue = parseFloat(timeUnit.value);
             const csv = `${xAxisLabel.value},${yAxisLabel.value}\n` + 
@@ -1421,6 +1742,7 @@
             if (e.key === 'Escape') {
                 closeStatsModal();
                 closeVideoModal();
+                closeHelpModal();
             }
         });
 
@@ -1433,6 +1755,12 @@
         document.getElementById('videoModal').addEventListener('click', (e) => {
             if (e.target.classList.contains('modal')) {
                 closeVideoModal();
+            }
+        });
+
+        document.getElementById('helpModal').addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                closeHelpModal();
             }
         });
     </script>
