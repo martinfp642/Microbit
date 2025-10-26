@@ -533,7 +533,6 @@
         <div class="toolbar-separator"></div>
         
         <button id="cameraBtn" class="toolbar-btn">CÁMARA</button>
-        <button id="examineBtn" class="toolbar-btn">EXAMINE</button>
         <button id="statsBtn" class="toolbar-btn">ESTADÍSTICAS</button>
         
         <div class="toolbar-separator"></div>
@@ -970,7 +969,6 @@ while True:
         const collectBtn = document.getElementById('collectBtn');
         const stopBtn = document.getElementById('stopBtn');
         const cameraBtn = document.getElementById('cameraBtn');
-        const examineBtn = document.getElementById('examineBtn');
         const statsBtn = document.getElementById('statsBtn');
         const exportBtn = document.getElementById('exportBtn');
         const clearBtn = document.getElementById('clearBtn');
@@ -1008,9 +1006,8 @@ while True:
         // Gráfica
         const ctx = document.getElementById('myChart').getContext('2d');
         const chart = new Chart(ctx, {
-            type: 'line',
+            type: 'scatter',
             data: {
-                labels: [],
                 datasets: [{
                     label: 'Datos',
                     data: [],
@@ -1021,6 +1018,7 @@ while True:
                     pointHoverRadius: 5,
                     pointBackgroundColor: '#000',
                     pointBorderColor: '#000',
+                    showLine: true,
                     tension: 0
                 }]
             },
@@ -1034,6 +1032,7 @@ while True:
                 },
                 scales: {
                     x: {
+                        type: 'linear',
                         title: {
                             display: true,
                             text: 'TIEMPO (S)',
@@ -1043,6 +1042,7 @@ while True:
                         ticks: { font: { size: 10 } }
                     },
                     y: {
+                        type: 'linear',
                         title: {
                             display: true,
                             text: 'VALOR',
@@ -1275,8 +1275,11 @@ while True:
                 chart.options.scales.x.title.text = xAxisLabel.value.toUpperCase();
                 chart.options.scales.y.title.text = yAxisLabel.value.toUpperCase();
 
-                chart.data.labels = displayData.map(d => d.adjustedTime.toFixed(3));
-                chart.data.datasets[0].data = displayData.map(d => d.value);
+                // Usar formato {x, y} para los puntos de datos
+                chart.data.datasets[0].data = displayData.map(d => ({
+                    x: d.adjustedTime,
+                    y: d.value
+                }));
                 chart.data.datasets[0].pointBackgroundColor = displayData.map(d =>
                     state.selectedPoints.has(d.id) ? '#666' : '#000'
                 );
@@ -1740,8 +1743,7 @@ while True:
             const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
             const step = (xMax - xMin) / numPoints;
             
-            const fitXValues = [];
-            const fitYValues = [];
+            const fitDataPoints = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
@@ -1749,36 +1751,32 @@ while True:
                 
                 // Solo agregar puntos válidos
                 if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
-                    fitXValues.push(x);
-                    fitYValues.push(y);
+                    fitDataPoints.push({ x: x, y: y });
                 }
             }
             
-            console.log('Ajuste agregado:', fitYValues.length, 'puntos');
+            console.log('Ajuste agregado:', fitDataPoints.length, 'puntos');
             console.log('Tipo:', state.fitData.type);
-            console.log('Muestra de Y:', fitYValues.slice(0, 10));
             
             // Si no tenemos suficientes puntos válidos
-            if (fitYValues.length < 10) {
+            if (fitDataPoints.length < 10) {
                 alert('No se puede graficar el ajuste en este rango de datos');
                 return;
             }
             
-            // Crear labels que coincidan con los datos originales
-            const fitLabels = fitXValues.map(x => x.toFixed(3));
-            
-            // Dataset de ajuste con LABELS PROPIOS
+            // Dataset de ajuste con línea punteada
             chart.data.datasets.push({
                 label: 'Ajuste teórico',
-                data: fitYValues,
-                borderColor: '#666',
+                data: fitDataPoints,
+                type: 'line',
+                borderColor: '#ff0000',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
-                borderDash: [5, 5],
+                borderDash: [8, 4],
                 pointRadius: 0,
                 tension: 0.4,
                 spanGaps: true,
-                parsing: false  // Importante: usar data como está
+                showLine: true
             });
             
             // Actualizar con 'default' para recalcular escalas
@@ -1798,19 +1796,19 @@ while True:
             const numPoints = state.fitData.type === 'sinusoidal' ? 1000 : 300;
             const step = (xMax - xMin) / numPoints;
             
-            const fitYValues = [];
+            const fitDataPoints = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
                 
                 if (isFinite(y) && !isNaN(y) && Math.abs(y) < 1e10) {
-                    fitYValues.push(y);
+                    fitDataPoints.push({ x: x, y: y });
                 }
             }
             
-            if (fitYValues.length >= 10) {
-                chart.data.datasets[1].data = fitYValues;
+            if (fitDataPoints.length >= 10) {
+                chart.data.datasets[1].data = fitDataPoints;
             }
         }
 
@@ -1836,6 +1834,9 @@ while True:
                     case 'logarithmic':
                         if (x <= 0) return NaN; // Logaritmo requiere x > 0
                         result = fit.params.a * Math.log(x) + fit.params.b;
+                        break;
+                    case 'sinusoidal':
+                        result = fit.params.A * Math.sin(fit.params.B * x + fit.params.C) + fit.params.D;
                         break;
                     default:
                         return 0;
@@ -1864,17 +1865,6 @@ while True:
         });
 
         // ========== HERRAMIENTAS ==========
-
-        examineBtn.addEventListener('click', () => {
-            state.examineMode = !state.examineMode;
-            if (state.examineMode) {
-                examineBtn.classList.add('primary');
-            } else {
-                examineBtn.classList.remove('primary');
-                document.getElementById('examineLine').style.display = 'none';
-                document.getElementById('examineLabel').style.display = 'none';
-            }
-        });
 
         statsBtn.addEventListener('click', () => {
             if (state.rawData.length === 0) {
@@ -1968,36 +1958,6 @@ while True:
                 if (state.rawData[dataIndex]) {
                     toggleSelect(state.rawData[dataIndex].id);
                 }
-            }
-        }
-
-        function handleChartHover(evt) {
-            if (!state.examineMode) return;
-            
-            const rect = chart.canvas.getBoundingClientRect();
-            const x = evt.native.clientX - rect.left;
-            const y = evt.native.clientY - rect.top;
-            
-            const points = chart.getElementsAtEventForMode(evt, 'nearest', { intersect: false }, true);
-            
-            if (points.length > 0) {
-                const point = points[0];
-                const dataIndex = point.index;
-                const xValue = chart.data.labels[dataIndex];
-                const yValue = chart.data.datasets[0].data[dataIndex];
-                
-                const examineLine = document.getElementById('examineLine');
-                const examineLabel = document.getElementById('examineLabel');
-                
-                examineLine.style.display = 'block';
-                examineLine.style.left = x + 'px';
-                examineLine.style.top = '0';
-                examineLine.style.height = rect.height + 'px';
-                
-                examineLabel.style.display = 'block';
-                examineLabel.style.left = (x + 10) + 'px';
-                examineLabel.style.top = (y - 40) + 'px';
-                examineLabel.innerHTML = `X: ${xValue}<br>Y: ${yValue.toFixed(4)}`;
             }
         }
 
