@@ -1493,15 +1493,36 @@ while True:
         }
 
         function displayFitResults() {
-            const quality = state.fitData.r2 > 0.95 ? 'EXCELENTE' : state.fitData.r2 > 0.85 ? 'BUENO' : 'REGULAR';
+            const quality = state.fitData.r2 > 0.95 ? 'EXCELENTE' : state.fitData.r2 > 0.85 ? 'BUENO' : state.fitData.r2 > 0.70 ? 'ACEPTABLE' : 'POBRE';
+            
+            let explanation = '';
+            switch (state.fitData.type) {
+                case 'linear':
+                    explanation = 'm = pendiente, b = intercepto';
+                    break;
+                case 'quadratic':
+                    explanation = 'a = curvatura, b = pendiente, c = intercepto';
+                    break;
+                case 'exponential':
+                    explanation = 'a = escala, b = tasa de crecimiento';
+                    break;
+                case 'power':
+                    explanation = 'a = escala, b = exponente';
+                    break;
+                case 'logarithmic':
+                    explanation = 'a = escala, b = desplazamiento';
+                    break;
+            }
             
             fitResults.innerHTML = `
                 <div class="fit-box">
-                    <div class="title">ECUACIÓN</div>
+                    <div class="title">ECUACIÓN DEL AJUSTE</div>
                     <div class="equation">${state.fitData.equation}</div>
                     <div class="stats">
                         R² = ${state.fitData.r2.toFixed(6)}<br>
-                        ${quality}
+                        CALIDAD: ${quality}<br>
+                        <br>
+                        ${explanation}
                     </div>
                 </div>
             `;
@@ -1514,30 +1535,47 @@ while True:
             
             const timeUnitValue = parseFloat(timeUnit.value);
             const xData = state.rawData.map(d => (d.time - state.timeZeroOffset) / timeUnitValue);
+            
+            if (xData.length === 0) return;
+            
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
-            const numPoints = 100;
+            const numPoints = 200; // Más puntos para curvas suaves
             const step = (xMax - xMin) / numPoints;
             
             const fitPoints = [];
+            const fitLabels = [];
             
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
+                
+                // Solo agregar puntos válidos
                 if (!isNaN(y) && isFinite(y)) {
-                    fitPoints.push(y);
+                    fitPoints.push({ x: x, y: y });
+                    fitLabels.push(x.toFixed(3));
+                } else {
+                    // Si encontramos un punto inválido, detener
+                    break;
                 }
             }
             
+            // Si no tenemos suficientes puntos válidos, no mostrar la curva
+            if (fitPoints.length < 10) {
+                alert('No se puede graficar el ajuste en este rango de datos');
+                return;
+            }
+            
             chart.data.datasets.push({
-                label: 'Ajuste',
-                data: fitPoints,
+                label: 'Ajuste teórico',
+                data: fitPoints.map(p => p.y),
                 borderColor: '#666',
                 backgroundColor: 'transparent',
                 borderWidth: 2,
                 borderDash: [5, 5],
                 pointRadius: 0,
-                tension: 0
+                tension: 0.4, // Curva suave
+                spanGaps: false
             });
             
             chart.update();
@@ -1547,9 +1585,12 @@ while True:
             if (!state.fitData || chart.data.datasets.length < 2) return;
             
             const xData = displayData.map(d => d.adjustedTime);
+            
+            if (xData.length === 0) return;
+            
             const xMin = Math.min(...xData);
             const xMax = Math.max(...xData);
-            const numPoints = 100;
+            const numPoints = 200;
             const step = (xMax - xMin) / numPoints;
             
             const fitPoints = [];
@@ -1557,30 +1598,54 @@ while True:
             for (let i = 0; i <= numPoints; i++) {
                 const x = xMin + i * step;
                 const y = evaluateFit(state.fitData, x);
+                
                 if (!isNaN(y) && isFinite(y)) {
                     fitPoints.push(y);
+                } else {
+                    break;
                 }
             }
             
-            chart.data.datasets[1].data = fitPoints;
+            if (fitPoints.length >= 10) {
+                chart.data.datasets[1].data = fitPoints;
+            }
         }
 
         function evaluateFit(fit, x) {
             if (!fit) return 0;
             
-            switch (fit.type) {
-                case 'linear':
-                    return fit.params.m * x + fit.params.b;
-                case 'quadratic':
-                    return fit.params.a * x * x + fit.params.b * x + fit.params.c;
-                case 'exponential':
-                    return fit.params.a * Math.exp(fit.params.b * x);
-                case 'power':
-                    return fit.params.a * Math.pow(x, fit.params.b);
-                case 'logarithmic':
-                    return fit.params.a * Math.log(x) + fit.params.b;
-                default:
-                    return 0;
+            try {
+                let result;
+                switch (fit.type) {
+                    case 'linear':
+                        result = fit.params.m * x + fit.params.b;
+                        break;
+                    case 'quadratic':
+                        result = fit.params.a * x * x + fit.params.b * x + fit.params.c;
+                        break;
+                    case 'exponential':
+                        result = fit.params.a * Math.exp(fit.params.b * x);
+                        break;
+                    case 'power':
+                        if (x <= 0) return NaN; // Potencial requiere x > 0
+                        result = fit.params.a * Math.pow(x, fit.params.b);
+                        break;
+                    case 'logarithmic':
+                        if (x <= 0) return NaN; // Logaritmo requiere x > 0
+                        result = fit.params.a * Math.log(x) + fit.params.b;
+                        break;
+                    default:
+                        return 0;
+                }
+                
+                // Verificar que el resultado sea válido
+                if (!isFinite(result) || Math.abs(result) > 1e10) {
+                    return NaN;
+                }
+                
+                return result;
+            } catch (err) {
+                return NaN;
             }
         }
 
