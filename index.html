@@ -100,12 +100,10 @@
             flex: 1;
             position: relative;
             min-height: 400px;
-            cursor: crosshair;
         }
         
         .chart-container canvas {
             position: relative;
-            z-index: 1;
         }
         
         /* Panel lateral */
@@ -293,11 +291,21 @@
         /* Selección de área */
         .selection-box {
             position: absolute;
-            border: 3px solid black;
-            background: rgba(0, 0, 0, 0.15);
+            border: 2px solid black;
+            background: rgba(0, 0, 0, 0.1);
             pointer-events: none;
             display: none;
-            z-index: 10;
+        }
+        
+        .range-selector {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 12px;
+        }
+        
+        .range-selector input {
+            width: 80px;
         }
         
         /* Stats modal */
@@ -602,6 +610,33 @@
                     <button class="toolbar-btn btn-full" id="setZeroBtn" disabled>
                         ESTABLECER T=0
                     </button>
+                </div>
+            </div>
+
+            <!-- Selección por rango -->
+            <div class="panel-section">
+                <div class="section-header" onclick="toggleSection(this)">
+                    SELECCIÓN POR RANGO <span>▼</span>
+                </div>
+                <div class="section-content">
+                    <div class="input-row">
+                        <label>Desde punto #</label>
+                        <input type="number" id="rangeStart" min="1" value="1">
+                    </div>
+                    <div class="input-row">
+                        <label>Hasta punto #</label>
+                        <input type="number" id="rangeEnd" min="1" value="1">
+                    </div>
+                    <button class="toolbar-btn primary btn-full" id="selectRangeBtn">
+                        SELECCIONAR RANGO
+                    </button>
+                    <button class="toolbar-btn btn-full" id="clearSelectionBtn">
+                        LIMPIAR SELECCIÓN
+                    </button>
+                    <div style="margin-top: 12px; font-size: 0.85rem; color: #666;">
+                        Total de puntos: <strong id="totalPointsDisplay">0</strong><br>
+                        Seleccionados: <strong id="selectedPointsDisplay">0</strong>
+                    </div>
                 </div>
             </div>
 
@@ -951,7 +986,12 @@ while True:
         const playbackVideo = document.getElementById('playbackVideo');
         const videoInfo = document.getElementById('videoInfo');
         const helpBtn = document.getElementById('helpBtn');
-        const selectionBox = document.getElementById('selectionBox');
+        const rangeStart = document.getElementById('rangeStart');
+        const rangeEnd = document.getElementById('rangeEnd');
+        const selectRangeBtn = document.getElementById('selectRangeBtn');
+        const clearSelectionBtn = document.getElementById('clearSelectionBtn');
+        const totalPointsDisplay = document.getElementById('totalPointsDisplay');
+        const selectedPointsDisplay = document.getElementById('selectedPointsDisplay');
 
         if (!('serial' in navigator)) {
             alert('Web Serial API no soportada. Usa Chrome, Edge u Opera.');
@@ -979,10 +1019,7 @@ while True:
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                interaction: {
-                    mode: 'nearest',
-                    intersect: true
-                },
+                onClick: handleChartClick,
                 plugins: {
                     legend: { display: false },
                     tooltip: { enabled: false }
